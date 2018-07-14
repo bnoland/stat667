@@ -1,0 +1,274 @@
+\documentclass[12pt]{article}
+%\usepackage[top=1.25in, bottom=1.25in, left=1in, right=1in]{geometry}
+\usepackage[top=0.9in, bottom=0.9in, left=0.5in, right=0.5in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{enumitem}
+\usepackage{chngcntr}
+
+%\usepackage{titlesec}
+
+% Perhaps not semantically ideal, but it works.
+%\titleformat*{\section}{\large\bfseries}
+
+\setenumerate{parsep=0em, listparindent=\parindent}
+
+% Reset equation numbering for each new item in an enumerate environment.
+\makeatletter
+\@addtoreset{equation}{enumi}
+\makeatother
+
+% Hacky macro to reset equation numbering within sections and subsections. See:
+% https://tex.stackexchange.com/questions/264335/when-using-section-counters-dont-reset-properly-how-to-fix-this
+\makeatletter
+\def\nullstepcounter#1{%
+	\begingroup
+		\let\@elt\@stpelt
+		\csname cl@#1\endcsname
+	\endgroup}
+\makeatother
+
+\counterwithin*{equation}{section}
+\counterwithin*{equation}{subsection}
+
+\DeclareMathOperator{\rank}{rank}
+
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Prob}{\mathrm{P}}
+
+\title{Homework 5}
+\author{Benjamin Noland}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{enumerate}
+\item
+The Bregman divergence associated with $l$ is given by
+\begin{equation*}
+D(\beta, \beta') = l(\beta) - l(\beta') - \langle \nabla l(\beta'), \beta - \beta' \rangle,
+\end{equation*}
+where
+\begin{equation*}
+\nabla l(\beta) = \frac{1}{n} \sum_{i=1}^n \psi_1(y_i, x_i^T\beta)x_i.
+\end{equation*}
+Thus,
+\begin{align*}
+D(\beta, \beta') + D(\beta', \beta) &= [l(\beta) - l(\beta') - \langle \nabla l(\beta'), \beta - \beta' \rangle] - [l(\beta') - l(\beta) - \langle \nabla l(\beta), \beta' - \beta \rangle] \\
+&= \langle \nabla l(\beta'), \beta' - \beta \rangle - \langle \nabla l(\beta), \beta' - \beta \rangle \\
+&= \langle \nabla l(\beta') - \nabla l(\beta), \beta' - \beta \rangle \\
+&= (\nabla l(\beta') - \nabla l(\beta))^T (\beta' - \beta) \\
+&= \frac{1}{n} \sum_{i=1}^n [\psi_1(y_i, x_i^T\beta') - \psi_1(y_i, x_i^T\beta)]x_i^T(\beta' - \beta).
+\end{align*}
+Let $u = x_i^T[\beta + t(\beta' - \beta)]$. Then
+\begin{align*}
+\frac{\partial}{\partial u} \psi_1(y_i, x_i^T[\beta + t(\beta' - \beta)]) &= \psi_2(y_i, x_i^T[\beta + t(\beta' - \beta)]) \frac{\partial}{\partial t} [x_i^T[\beta + t(\beta' - \beta)]] \\
+&= \psi_2(y_i, x_i^T[\beta + t(\beta' - \beta)])x_i^T(\beta' - \beta).
+\end{align*}
+Therefore,
+\begin{align*}
+\int_0^1 \psi_2(y_i, x_i^T[\beta + t(\beta' - \beta)])x_i^T(\beta' - \beta) \, dt &= \psi_1(y_i, x_i^T[\beta + t(\beta' - \beta)]) \Big|_0^1 \\
+&= \psi_1(y_i, x_i^T\beta') - \psi_1(y_i, x_i^T\beta).
+\end{align*}
+Hence,
+\begin{align*}
+D(\beta, \beta') + D(\beta', \beta) &= \frac{1}{n} \sum_{i=1}^n [\psi_1(y_i, x_i^T\beta') - \psi_1(y_i, x_i^T\beta)]x_i^T(\beta' - \beta) \\
+&= \frac{1}{n} \sum_{i=1}^n \left[\int_0^1 \psi_2(y_i, x_i^T[\beta + t(\beta' - \beta)])x_i^T(\beta' - \beta) \, dt\right]x_i^T(\beta' - \beta) \\
+&= \frac{1}{n} \sum_{i=1}^n \left[\int_0^1 \psi_2(y_i, x_i^T[\beta + t(\beta' - \beta)]) \, dt\right](x_i^T(\beta' - \beta))^2.
+\end{align*}
+
+\item
+Define
+\begin{align*}
+f(x, y; \beta) &= \Prob\{Y = y | x\} = \Prob\{Y = 1 | x\}^y \Prob\{Y = 0 | x\}^{1-y} \\
+&= \left(\frac{e^{x^T\beta}}{1 + e^{x^T\beta}}\right)^y \left(\frac{1}{1 + e^{x^T\beta}}\right)^{1-y},
+\end{align*}
+where $y \in \{0, 1\}$. The log-likelihood is therefore given by
+\begin{align*}
+\log L(\beta; x, y) &= \sum_{i=1}^n \log f(x, y; \beta) \\
+&= \sum_{i=1}^n \left[y_i \left(\frac{e^{x_i^T\beta}}{1 + e^{x_i^T\beta}}\right) + (1-y_i) \left(\frac{1}{1 + e^{x_i^T\beta}}\right) \right] \\
+&= \sum_{i=1}^n \left[y_i\left[x_i^T\beta - \log(1 + e^{x_i^T\beta})\right] - (1 - y_i)\log(1 + e^{x_i^T\beta})\right] \\
+&= \sum_{i=1}^n \left[y_i x_i^T\beta - \log(1 + e^{x_i^T\beta})\right].
+\end{align*}
+Define
+\begin{equation*}
+\psi(y, u) = -yu + \log(1 + e^u)
+\end{equation*}
+and
+\begin{equation*}
+l(\beta) = \frac{1}{n} \sum_{i=1}^n \psi(y_i, x_i^T\beta) = \frac{1}{n} \sum_{i=1}^n [-y_ix_i^T\beta + \log(1 + e^{x_i^T\beta})].
+\end{equation*}
+Then minimizing $l(\beta)$ is equivalent to maximizing $\log L(\beta; x, y)$, and hence $L(\beta; x, y)$. In addition, we have the following:
+\begin{equation*}
+\psi_1(y, u) = -y + \frac{e^u}{1 + e^u}
+\end{equation*}
+and hence
+\begin{equation*}
+\psi_2(y, u) = \frac{e^u}{(1 + e^u)^2} = \psi_2(y, u') \frac{e^{u - u'}}{(1 + e^u)^2}(1 + e^{u'})^2.
+\end{equation*}
+When $u' \leq u$, we have
+\begin{equation*}
+\frac{e^{u - u'}}{(1 + e^u)^2}(1 + e^{u'})^2 \leq e^{u - u'} \leq e^{|u' - u|}.
+\end{equation*}
+Now assume $u' > u$. Then
+\begin{align*}
+\frac{e^{u - u'}}{(1 + e^u)^2}(1 + e^{u'})^2 &= \frac{(e^{(u-u')/2} + e^{(u+u')/2})^2}{(1+e^u)^2}\leq \frac{(e^{(u-u')/2} + e^{u'})^2}{(1+e^u)^2} \\
+&\leq \left(e^{(u-u')/2} + \frac{e^{u'}}{1+e^u}\right)^2 \leq \left(e^{(u-u')/2} + e^{u' - u}\right)^2 \\
+&\leq (2e^{u' - u})^2 \leq 4e^{2(u' - u)} = 4e^{2|u' - u|}
+\end{align*}
+I could not get rid of the leading constant here. If in the case $u' > u$ I could find a bound of the form
+\begin{equation*}
+\frac{e^{u - u'}}{(1 + e^u)^2}(1 + e^{u'})^2 \leq e^{C_0|u' - u|},
+\end{equation*}
+then taking $C = \max\{1, C_0\}$ would complete the proof.
+
+\item
+We have the following:
+\begin{align*}
+D(\hat{\beta}, \beta^*) + D(\beta^*, \hat{\beta}) &= \langle \nabla l(\beta^*) - \nabla l(\hat{\beta}), \beta^* - \hat{\beta} \rangle \\
+&= \frac{1}{n} \sum_{i=1} \left[\frac{e^{x_i^T\beta^*}}{1 + e^{x_i^T\beta^*}} - \frac{e^{x_i^T\hat{\beta}}}{1 + e^{x_i^T\hat{\beta}}}\right]x_i^T(\beta^* - \hat{\beta}),
+\end{align*}
+where
+\begin{equation*}
+\nabla l(\beta) = \frac{1}{n} \sum_{i=1}^n \left[-y_ix_i + \frac{e^{x_i^T\beta}}{1 + e^{x_i^T\beta}}x_i\right].
+\end{equation*}
+
+Assumptions:
+\begin{itemize}
+\item
+$|X_{ij}| \leq D$ for every $1 \leq i \leq n$ and $1 \leq j \leq p$ and some constant $D > 0$.
+\item
+$\psi_2(y, u) \leq \psi_2(y, u') e^{c_1|u - u'|}$ for every $y, u$, and $u'$, and some constant $c > 0$ (this is satisfied by problem 2).
+\item
+The following compatibility condition holds: there exist constants $\nu_0 > 0$ and $\xi_0 > 1$ such that if $b \in \mathbb{R}^p$ satisfies
+\begin{equation*}
+\sum_{j \not \in S} |b_j| \leq \xi_0 \sum_{j \in S} |b_j|,
+\end{equation*}
+then
+\begin{equation*}
+\nu_0^2\left(\sum_{j \in S} |b_j| \right)^2 \leq |S| (b^T \widetilde{\Sigma}_{\beta^*} b),
+\end{equation*}
+where
+\begin{equation*}
+\widetilde{\Sigma}_{\beta^*} = \frac{\partial^2}{\partial \beta \partial \beta^T} l(\beta) \Big|_{\beta = \beta^*}.
+\end{equation*}
+\item
+$A_0 > (\xi_0 + 1) / (\xi_0 - 1)$, and the tuning parameter $\lambda = A_0 \rho$, where $\rho = \sigma \sqrt{2\log(p / \delta) / n}$ for some $0 < \delta < 1/2$.
+\item
+$\psi_1(y_i, x_i^T\beta^*)$ is sub-Gaussian with mean $0$ and variance $\sigma^2$ for every $1 \leq i \leq n$.
+\end{itemize}
+
+Let $\Omega$ denote the event
+\begin{equation*}
+\Omega = \left\{\max_{1 \leq j \leq p} \left|\frac{1}{n} \sum_{i=1}^n \psi_1(y_i, x_i^T\beta^*)\right| \leq \rho \right\}.
+\end{equation*}
+Then $\Prob(\Omega) \geq 1 - 2\delta$ as discussed in the lectures. Then by Lemma 3 with the value of $S$ given in the problem,
+\begin{equation*}
+D(\hat{\beta}, \beta^*) + D(\beta^*, \hat{\beta}) + (A_0 - 1) \rho \Vert \hat{\beta} - \beta^* \Vert_1 \leq 2A_0 \rho \sum_{j \in S} |\hat{\beta}_j - \beta^*_j|
+\end{equation*}
+in the event $\Omega$. In particular,
+\begin{equation*}
+ 2A_0 \rho \sum_{j \in S} |\hat{\beta}_j - \beta^*_j| \geq (A_0 - 1) \rho \Vert \hat{\beta} - \beta^* \Vert_1 = (A_0 - 1) \rho \sum_{j \not \in S} |\hat{\beta}_j - \beta^*_j| + (A_0 - 1) \rho \sum_{j \in S} |\hat{\beta}_j - \beta^*_j|,
+\end{equation*}
+so that upon rearrangement,
+\begin{equation*}
+(A_0 - 1) \rho \sum_{j \not \in S} |\hat{\beta}_j - \beta^*_j| \leq (A_0 + 1) \rho \sum_{j \in S} |\hat{\beta}_j - \beta^*_j|,
+\end{equation*}
+and thus,
+\begin{equation*}
+\sum_{j \not \in S} |\hat{\beta}_j - \beta^*_j| \leq \frac{A_0 + 1}{A_0 - 1} \sum_{j \in S} |\hat{\beta}_j - \beta^*_j| < \xi_0 \sum_{j \in S} |\hat{\beta}_j - \beta^*_j|.
+\end{equation*}
+The compatibility condition therefore implies that
+\begin{equation*}
+\nu_0^2 \left(\sum_{j \in S} |\hat{\beta}_j - \beta^*_j|\right)^2 \leq |S| (\hat{\beta} - \beta^*)^T \widetilde{\Sigma}_{\beta^*} (\hat{\beta} - \beta^*).
+\end{equation*}
+By a result from the lectures,
+\begin{equation*}
+D(\hat{\beta}, \beta^*) + D(\beta^*, \hat{\beta}) \geq C(\hat{\beta}, \beta^*) (\hat{\beta} - \beta^*)^T \widetilde{\Sigma}_{\beta^*} (\hat{\beta} - \beta^*),
+\end{equation*}
+where
+\begin{equation*}
+C(\hat{\beta}, \beta^*) = \frac{1 - e^{cD\Vert \hat{\beta} - \beta^* \Vert_1}}{cD\Vert \hat{\beta} - \beta^* \Vert_1}.
+\end{equation*}
+Therefore, if we assume that $C(\hat{\beta}, \beta^*) \neq 0$ with probability 1,
+\begin{align*}
+\nu_0^2 \left(\sum_{j \in S} |\hat{\beta}_j - \beta^*_j|\right)^2 &\leq |S| (\hat{\beta} - \beta^*)^T \widetilde{\Sigma}_{\beta^*} (\hat{\beta} - \beta^*) \\
+&\leq \frac{1}{C(\hat{\beta}, \beta^*)} [D(\hat{\beta}, \beta^*) + D(\beta^*, \hat{\beta})].
+\end{align*}
+Thus,
+\begin{align*}
+D(\hat{\beta}, \beta^*) + D(\beta^*, \hat{\beta}) &\leq 2A_0 \rho \sum_{j \in S} |\hat{\beta}_j - \beta^*_j| \\
+&\leq 2A_0 \rho |S|^{1/2} \frac{1}{C(\hat{\beta}, \beta^*)^{1/2}} [D(\hat{\beta}, \beta^*) + D(\beta^*, \hat{\beta})]^{1/2},
+\end{align*}
+so that upon rearrangement,
+\begin{equation*}
+D(\hat{\beta}, \beta^*) + D(\beta^*, \hat{\beta}) \leq 4A_0^2\rho^2|S| \frac{1}{C(\hat{\beta}, \beta^*)}.
+\end{equation*}
+If we assume in addition that $1/C(\hat{\beta}, \beta^*) = O_p(1)$ and $p \geq 1/\delta$, then
+\begin{align*}
+D(\hat{\beta}, \beta^*) + D(\beta^*, \hat{\beta}) &\leq 4A_0^2\rho^2|S| \frac{1}{C(\hat{\beta}, \beta^*)} \\
+&= 4A_0^2 \frac{2\sigma^2\log(p / \delta)}{n} |S| \frac{1}{C(\hat{\beta}, \beta^*)} \\
+&= 4A_0^2 \frac{2\sigma^2(\log(p) + \log(1/\delta))}{n} |S| \frac{1}{C(\hat{\beta}, \beta^*)} \\
+&\leq 4A_0^2 \frac{4\sigma^2\log(p)}{n} |S| \frac{1}{C(\hat{\beta}, \beta^*)} \\
+&= O_p(1) |S| \lambda_0,
+\end{align*}
+so that
+\begin{equation*}
+D(\hat{\beta}, \beta^*) + D(\beta^*, \hat{\beta}) \leq O_p(1) |S| \lambda_0
+\end{equation*}
+with probability 1.
+
+\setcounter{enumi}{4}
+\item
+\begin{enumerate}[label=(\roman*)]
+\item
+The Bregman divergence associated with $K_n$ is given by
+\begin{align*}
+D_K(\beta, \beta') &= K_n(\beta) - K_n(\beta') - \langle \nabla K_n(\beta'), \beta - \beta' \rangle \\
+&= \frac{1}{n} \sum_{i=1}^n [y_i e^{-\beta^Tx_i} + (1 - y_i)\beta^Tx_i] - \frac{1}{n} \sum_{i=1}^n [y_i e^{-(\beta')^Tx_i} + (1 - y_i)(\beta')^Tx_i] \\
+&\qquad- \frac{1}{n} \sum_{i=1}^n [-y_i e^{-(\beta')^Tx_i}x_i + (1 - y_i)x_i]^T(\beta - \beta') \\
+&= \frac{1}{n} \sum_{i=1}^n [y_i e^{-\beta^Tx_i} - y_i e^{-(\beta')^Tx_i} + y_i e^{-(\beta')^Tx_i}x_i^T(\beta - \beta')],
+\end{align*}
+since
+\begin{equation*}
+\nabla K_n(\beta') = \frac{1}{n} \sum_{i=1}^n [-y_i e^{-(\beta')^Tx_i}x_i + (1 - y_i)x_i].
+\end{equation*}
+On the other hand, the Bregman divergence associated with $l$ is given by
+\begin{align*}
+D(\beta, \beta') &= l(\beta) - l(\beta') - \langle \nabla l(\beta'), \beta - \beta' \rangle \\
+&= \frac{1}{n} \sum_{i=1}^n [-y_ix_i^T\beta + \log(1 + e^{x_i^T\beta})] - \frac{1}{n} \sum_{i=1}^n [-y_ix_i^T\beta' + \log(1 + e^{x_i^T(\beta')})] \\
+&\qquad - \frac{1}{n} \sum_{i=1}^n \left[-y_ix_i + \frac{e^{x_i^T\beta'}}{1 + e^{x_i^T\beta'}}\right] \\
+&= \frac{1}{n} \sum_{i=1}^n \left[\log\left(\frac{1 + e^{x_i^T\beta}}{1 + e^{x_i^T\beta'}}\right) - \frac{e^{x_i^T\beta'}}{1 + e^{x_i^T\beta'}}x_i^T(\beta - \beta')\right],
+\end{align*}
+since
+\begin{equation*}
+\nabla l(\beta) = \frac{1}{n} \sum_{i=1}^n \left[-y_ix_i + \frac{e^{x_i^T\beta}}{1 + e^{x_i^T\beta}}x_i\right].
+\end{equation*}
+There is no discernible relationship between $D_K$ and $D_l$.
+
+\item
+We have the following:
+\begin{align*}
+D_K(\hat{\beta}, \beta^*) + D_K(\beta^*, \hat{\beta}) &= \frac{1}{n} \sum_{i=1}^n [y_i e^{-\hat{\beta}^Tx_i} - y_i e^{-(\beta^*)^Tx_i} + y_i e^{-(\beta^*)^Tx_i}x_i^T(\hat{\beta }- \beta^*)] \\
+&\qquad+ \frac{1}{n} \sum_{i=1}^n [y_i e^{-(\beta^*)^Tx_i} - y_i e^{-\hat{\beta}^Tx_i} + y_i e^{-\hat{\beta}^Tx_i}x_i^T(\beta^* - \hat{\beta})] \\
+&= \frac{1}{n} \sum_{i=1}^n [y_i e^{-(\beta^*)^Tx_i} - y_i e^{-\hat{\beta}^Tx_i}]x_i^T(\beta^* - \hat{\beta}).
+\end{align*}
+
+By the same argument as in problem 3, and under the same conditions, we see that
+\begin{equation*}
+D_K(\hat{\beta}, \beta^*) + D_K(\beta^*, \hat{\beta}) \leq O_p(1) |S| \lambda_0.
+\end{equation*}
+This is because the argument in problem 3 was done using enough generality to encompass this case as well. However, this lead to some potentially very restrictive assumptions.
+
+\item
+The conditions are the same in both cases, although it is likely the conditions can be \emph{substantially} weakened by exploiting the form of the Bregman divergence in each case.
+
+\end{enumerate}
+
+\end{enumerate}
+
+\end{document}

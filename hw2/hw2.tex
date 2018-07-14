@@ -1,0 +1,285 @@
+\documentclass[12pt]{article}
+\usepackage[top=1.25in, bottom=1.25in, left=1in, right=1in]{geometry}
+%\usepackage[top=0.9in, bottom=0.9in, left=0.5in, right=0.5in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{enumitem}
+\usepackage{chngcntr}
+
+%\usepackage{titlesec}
+
+% Perhaps not semantically ideal, but it works.
+%\titleformat*{\section}{\large\bfseries}
+
+\setenumerate{parsep=0em, listparindent=\parindent}
+
+% Reset equation numbering for each new item in an enumerate environment.
+\makeatletter
+\@addtoreset{equation}{enumi}
+\makeatother
+
+% Hacky macro to reset equation numbering within sections and subsections. See:
+% https://tex.stackexchange.com/questions/264335/when-using-section-counters-dont-reset-properly-how-to-fix-this
+\makeatletter
+\def\nullstepcounter#1{%
+	\begingroup
+		\let\@elt\@stpelt
+		\csname cl@#1\endcsname
+	\endgroup}
+\makeatother
+
+\counterwithin*{equation}{section}
+\counterwithin*{equation}{subsection}
+
+\DeclareMathOperator{\rank}{rank}
+
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Prob}{\mathrm{P}}
+
+\title{Homework 2}
+\author{Benjamin Noland}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{enumerate}
+\item
+First, let $\theta_1, \theta_2 \in \Theta$ be such that $\theta_1$ lies on the line segment connecting $\theta_0$ and $\theta_2$; that is, $\theta_1 \in L$, where $L = \{t\theta_0 + (1-t)\theta_2 : t \in [0, 1]\}$. I claim that $K(\theta_1) \leq K(\theta_2)$. To see this, note that since $K$ is convex,
+\begin{equation*}
+K(t\theta_0 + (1-t)\theta_2) \leq tK(\theta_0) + (1-t)K(\theta_2) \quad \text{for every $t \in [0, 1]$}.
+\end{equation*}
+In particular, since $\theta_1 \in L$, there exists $t' \in [0, 1]$ such that $\theta_1 = t'\theta_0 + (1-t')\theta_2$. Hence,
+\begin{align*}
+K(\theta_1) = K(t'\theta_0 + (1-t')\theta_2) &\leq t'K(\theta_0) + (1-t')K(\theta_2) \\
+& \leq t'K(\theta_2) + (1-t')K(\theta_2) = K(\theta_2),
+\end{align*}
+since $\theta_0$ is a minimizer of $K$. This verifies the claim.
+
+Now for the main result. Let $\epsilon > 0$. Write $B_\epsilon^c = \Theta \setminus B_\epsilon$. Since $B_\epsilon$ is a bounded set, and its boundary $\partial B_\epsilon$ is closed, it follows that $\partial B_\epsilon$ is bounded as well, so that $\partial B_\epsilon$ is compact. It is a well-known fact that a convex function on an open convex set is continuous; in particular, $K$ is continuous on $\Theta$. Thus the map $f : \Theta \to \mathbb{R}$ defined by $f(\theta) = K(\theta) - K(\theta_0)$ is continuous as well. Therefore, since $\partial B_\epsilon$ is compact, $f$ attains a minimum value $\delta = \min_{\theta \in \partial B_\epsilon} f(\theta)$ on $\partial B_\epsilon$. Moreover, since $\theta_0$ is the unique minimizer of $K$, and $\theta_0 \not \in \partial B_\epsilon$, we see that $\delta > 0$. Next, let $\theta \in B_\epsilon^c$. Let $L = \{t\theta_0 + (1-t)\theta : t \in [0, 1]\}$ denote the line segment connecting $\theta_0$ and $\theta$. Then we can choose a point $\theta' \in L$ such that $\theta' \in \partial B_\epsilon$, and by the above claim, $K(\theta') \leq K(\theta)$, so that $K(\theta') - K(\theta) \geq 0$. Therefore,
+\begin{align*}
+K(\theta) - K(\theta_0) &= [K(\theta) - K(\theta')] + [K(\theta') - K(\theta_0)] \\
+&= [K(\theta) - K(\theta')] + f(\theta') \\
+&\geq [K(\theta) - K(\theta')] + \delta \geq \delta > 0.
+\end{align*}
+Hence,
+\begin{equation*}
+\inf_{\theta \in B_\epsilon^c} [K(\theta) - K(\theta_0)] \geq \delta > 0,
+\end{equation*}
+so that
+\begin{equation*}
+\inf_{\theta \in B_\epsilon^c} K(\theta) > K(\theta_0),
+\end{equation*}
+as desired.
+
+\item
+\begin{enumerate}[label=(\roman*)]
+\item
+Let $\epsilon > 0$ and $\delta > 0$, and let $\epsilon_0 = \min\{c\delta^2, \epsilon\}$. Then by hypothesis, there exists $N \geq 1$ such that
+\begin{equation*}
+\Prob\{|X_n| > \sqrt{\epsilon_0 / c}\} \leq \epsilon_0 \quad \text{for every $n \geq N$},
+\end{equation*}
+where $c > 0$ is some constant. Hence for every $n \geq N$, since $\epsilon_0 \leq c\delta^2$ (so that $\delta \geq \sqrt{\epsilon_0 / c}$) and $\epsilon_0 \leq \epsilon$, we have
+\begin{equation*}
+\Prob\{|X_n| > \delta\} \leq \Prob\{|X_n| > \sqrt{\epsilon_0 / c}\} \leq \epsilon_0 \leq \epsilon,
+\end{equation*}
+and therefore $X_n \overset{p}\to 0$, so that $X_n = o_p(1)$.
+
+\item
+Suppose that for every $\epsilon > 0$ there exists $N \geq 1$ such that
+\begin{equation*}
+\Prob\{|X_n| > M(\epsilon)\} \leq \epsilon \quad \text{for every $n \geq N$},
+\end{equation*}
+where $M : \mathbb{R} \to \mathbb{R}^{>0}$ (here $\mathbb{R}^{>0}$ denotes the set of positive real numbers) is a strictly-increasing function. I claim that $X_n = o_p(1)$.
+
+Let $\epsilon > 0$ and $\delta > 0$. Note that since $M$ is strictly-increasing, it has an inverse $M^{-1} : \mathbb{R}^{>0} \to \mathbb{R}$. Let $\epsilon_0 = \min\{M^{-1}(\delta), \epsilon\}$. Then by hypothesis there exists $N \geq 1$ such that
+\begin{equation*}
+\Prob\{|X_n| > M(\epsilon_0)\} \leq \epsilon_0 \quad \text{for every $n \geq N$}.
+\end{equation*}
+Since $\epsilon_0 \leq M^{-1}(\delta)$, the fact that $M$ is strictly increasing implies that $M(\epsilon_0) \leq \delta$. Moreover, $\epsilon_0 \leq \epsilon$, and therefore, for every $n \geq N$,
+\begin{equation*}
+\Prob\{|X_n| > \delta\} \leq \Prob\{|X_n| > M(\epsilon_0)\} \leq \epsilon_0 \leq \epsilon.
+\end{equation*}
+Thus $X_n \overset{p}\to 0$, so that $X_n = o_p(1)$.
+
+\end{enumerate}
+
+\item
+\begin{enumerate}[label=(\roman*)]
+\item
+Let $\epsilon > 0$. Then Markov's Inequality implies that
+\begin{equation*}
+\Prob\{|Z_n^2| \geq \epsilon\} = \Prob\{Z_n^2 \geq \epsilon\} \leq \frac{\E(Z_n^2)}{\epsilon}.
+\end{equation*}
+Thus, since $\E(Z_n^2) \to 0$ as $n \to \infty$ by hypothesis, we see that $\Prob\{|Z_n^2| \geq \epsilon\} \to 0$ as $n \to \infty$, as well. Thus $Z_n^2 \overset{p}\to 0$. Now, define a map $f : \mathbb{R}^{\geq 0} \to \mathbb{R}$ (here $\mathbb{R}^{\geq 0}$ denotes the set of non-negative real numbers) by $f(x) = \sqrt{x}$. Then we can write $Z_n = f(Z_n^2)$. Since $f$ is everywhere continuous, the Continuous Mapping Theorem implies that $f(Z_n^2) \overset{p}\to f(0)$, so that $Z_n \overset{p}\to 0$.
+
+\item
+Suppose $f : \mathbb{R} \to \mathbb{R}^{\geq 0}$ is a function with a continuous inverse $f^{-1} : \mathbb{R}^{\geq 0} \to \mathbb{R}$ such that $f^{-1}(0) = 0$, and that $f$ satisfies $\E(f(Z_n)) \to 0$ as $n \to \infty$. I claim that $Z_n \overset{p}\to 0$.
+
+Let $\epsilon > 0$. Then Markov's Inequality implies that
+\begin{equation*}
+\Prob\{|f(Z_n)| \geq \epsilon\} = \Prob\{f(Z_n) \geq \epsilon\} \leq \frac{\E(f(Z_n))}{\epsilon}.
+\end{equation*}
+Thus since $\E(f(Z_n)) \to 0$ as $n \to \infty$ by hypothesis, we see that $\Prob\{|f(Z_n)| \geq \epsilon\} \to 0$ as $n \to \infty$, as well. Thus $f(Z_n) \overset{p}\to 0$. Moreover, since $f$ has a continuous inverse $f^{-1}$, the Continuous Mapping Theorem implies that $f^{-1}(f(Z_n)) \overset{p}\to f^{-1}(0)$. Thus, since $f^{-1}(0) = 0$ by hypothesis, we see that $Z_n \overset{p}\to 0$.
+
+\end{enumerate}
+
+\item
+Since $K$ is twice-differentiable, it is possible to expand it into a second-order Taylor series about $\theta_0$. Specifically, we can write
+\begin{align*}
+K(\theta_0 + \alpha/\sqrt{n}) = K(\theta_0) &+ (\theta_0 + \alpha/\sqrt{n} - \theta_0)^T \left(\frac{\partial}{\partial \theta} K(\theta_0)\right) \\
+&+ \frac{1}{2}(\theta_0 + \alpha/\sqrt{n} - \theta_0)^T \left(\frac{\partial^2}{\partial \theta \partial \theta^T} K(\tilde{\theta}_n)\right) (\theta_0 + \alpha/\sqrt{n} - \theta_0),
+\end{align*}
+where $\tilde{\theta}_n$ lies on the line segment between $(\theta_0 + \alpha/\sqrt{n})$ and $\theta_0$. Since $\theta_0$ is a minimizer of $K$, $\frac{\partial}{\partial \theta} K(\theta_0) = 0$. Thus we can simplify the above expression to yield
+\begin{align*}
+K(\theta_0 + \alpha/\sqrt{n}) &= K(\theta_0) + \frac{1}{2}(\alpha/\sqrt{n})^T \left(\frac{\partial^2}{\partial \theta \partial \theta^T} K(\tilde{\theta}_n)\right) (\alpha/\sqrt{n}) \\
+&= K(\theta_0) + \frac{1}{2n}\alpha^T \left(\frac{\partial^2}{\partial \theta \partial \theta^T} K(\tilde{\theta}_n)\right) \alpha.
+\end{align*}
+Therefore,
+\begin{equation*}
+n[K(\theta_0 + \alpha/\sqrt{n}) - K(\theta_0)] = \frac{1}{2}\alpha^T \left(\frac{\partial^2}{\partial \theta \partial \theta^T} K(\tilde{\theta}_n)\right) \alpha.
+\end{equation*}
+Now, since $(\theta_0 + \alpha/\sqrt{n}) \to \theta_0$ as $n \to \infty$, and $\tilde{\theta}_n$ lies on the line segment between $(\theta_0 + \alpha/\sqrt{n})$ and $\theta_0$, it follows that $\tilde{\theta}_n \to \theta_0$ as $n \to \infty$, as well. It follows that, as $n \to \infty$,
+\begin{align*}
+n[K(\theta_0 + \alpha/\sqrt{n}) - K(\theta_0)] &= \frac{1}{2}\alpha^T \left(\frac{\partial^2}{\partial \theta \partial \theta^T} K(\tilde{\theta}_n)\right) \alpha \\
+&\to \frac{1}{2}\alpha^T \left(\frac{\partial^2}{\partial \theta \partial \theta^T} K(\theta_0)\right) \alpha = \frac{1}{2} \alpha^T H \alpha.
+\end{align*}
+
+\item
+\begin{enumerate}[label=(\roman*)]
+\item
+Define
+\begin{align*}
+f(x, y; \beta) &= \Prob\{Y = y | x\} = \Prob\{Y = 1 | x\}^y \Prob\{Y = 0 | x\}^{1-y} \\
+&= \left(\frac{e^{x^T\beta}}{1 + e^{x^T\beta}}\right)^y \left(\frac{1}{1 + e^{x^T\beta}}\right)^{1-y},
+\end{align*}
+where $y \in \{0, 1\}$. The log-likelihood is therefore given by
+\begin{align*}
+\log L(\beta; x, y) &= \sum_{i=1}^n \log f(x, y; \beta) \\
+&= \sum_{i=1}^n \left[y_i \left(\frac{e^{x_i^T\beta}}{1 + e^{x_i^T\beta}}\right) + (1-y_i) \left(\frac{1}{1 + e^{x_i^T\beta}}\right) \right] \\
+&= \sum_{i=1}^n \left\{y_i\left[x_i^T\beta - \log(1 + e^{x_i^T\beta})\right] - (1 - y_i)\log(1 + e^{x_i^T\beta})\right\} \\
+&= \sum_{i=1}^n \left[y_i x_i^T\beta - \log(1 + e^{x_i^T\beta})\right] = \sum_{i=1}^n [-\rho(x_i, y_i; \beta)],
+\end{align*}
+where
+\begin{equation*}
+\rho(x, y; \beta) = -y x^T\beta + \log(1 + e^{x^T\beta}).
+\end{equation*}
+Take the parameter space $\Theta$ to be a convex set. Note that $\rho(x, y; \beta)$ is twice-differentiable in $\beta$. Define
+\begin{align*}
+h(x, y; \beta) = \frac{\partial}{\partial \beta} \rho(x, y; \beta) = -yx + \frac{e^{x^T\beta}}{1 + e^{x^T\beta}} x.
+\end{align*}
+Thus $h(x, y; \beta)$ is a subgradient of $\rho(x, y; \beta)$. Also define
+\begin{equation*}
+H(\beta; x, y) = \frac{\partial^2}{\partial \beta \partial \beta^T} \rho(x, y; \beta) = \frac{e^{x^T\beta}}{(1 + e^{x^T\beta})^2} xx^T.
+\end{equation*}
+Note that for any $\beta \in \Theta$, since the matrix $xx^T$ is positive semidefinite, it follows that the Hessian $H(\beta; x, y)$ is positive semidefinite, and thus $\rho(x, y; \beta)$ is convex in $\beta$. (In particular, this implies that the log-likelihood $\log L(\beta; x, y)$ is concave in $\beta$, and hence has a unique maximizer). Define
+\begin{equation*}
+K(\beta) = \E[\rho(X, Y; \beta)] = \E[-YX + \log(1 + e^{X^T\beta})].
+\end{equation*}
+Assume that $K(\beta) < \infty$ for every $\beta \in \Theta$, and that $K(\beta)$ has a unique minimizer $\beta_0$. Assume further that $\E[|h(X, Y; \beta)|^2] < \infty$ for every $\beta$ in a neighborhood of $\beta_0$. Assuming it is admissible to swap expectation with differentiation in this context, $K(\beta)$ is twice-differentiable, and so we have
+\begin{align*}
+H = \frac{\partial^2}{\partial \beta \partial \beta^T} K(\beta_0) &= \frac{\partial^2}{\partial \beta \partial \beta^T} \E[\rho(X, Y; \beta_0)] = \E\left[\frac{\partial^2}{\partial \beta \partial \beta^T} \rho(X, Y; \beta_0)\right] \\
+&= \E\left[\frac{e^{X^T\beta_0}}{(1 + e^{X^T\beta_0})^2} XX^T\right] = \E[H(X, Y; \beta_0)].
+\end{align*}
+As established, the Hessian $H(x, y; \beta)$ of $\rho(x, y; \beta)$ is positive semidefinite since the matrix $xx^T$ is positive semidefinite. Moreover, if $xx^T$ is non-singular, then it must be positive definite. In particular, $H$ is positive definite if $\E(XX^T)$ is non-singular.
+
+Thus, under the conditions outlined above, $\hat{\beta}_\mathrm{ML}$ is consistent and asymptotically normal. To summarize (the definitions are as in the discussion above), the conditions are:
+\begin{enumerate}[label=(\arabic*)]
+\item
+The parameter space $\Theta$ is convex.
+
+\item
+$K(\beta) < \infty$ for every $\beta \in \Theta$.
+
+\item
+$K(\beta)$ has a unique minimizer $\beta_0$.
+
+\item
+$\E[|h(X, Y; \beta)|^2] < \infty$ for every $\beta$ in a neighborhood of $\beta_0$.
+
+\item
+$\E(XX^T)$ is non-singular.
+
+\end{enumerate}
+Therefore, under these conditions, $\hat{\beta}_\mathrm{ML} \overset{p}\to \beta_0$, and
+\begin{equation*}
+\sqrt{n}(\hat{\beta}_\mathrm{ML} - \beta_0) = -H^{-1} \frac{1}{\sqrt{n}} \sum_{i=1}^n h(X_i, Y_i; \beta_0) + o_p(1),
+\end{equation*}
+so that
+\begin{equation*}
+\sqrt{n}(\hat{\beta}_\mathrm{ML} - \beta_0) \overset{\mathcal{D}}\to N(0, H^{-1}JH^{-1}),
+\end{equation*}
+where $J$ is given by
+\begin{align*}
+J &= \E[h(X, Y; \beta_0)h(X, Y; \beta_0)^T] \\
+&= \E\left[\left(-YX + \frac{e^{X^T\beta_0}}{1 + e^{X^T\beta_0}} X\right) \left(-YX + \frac{e^{X^T\beta_0}}{1 + e^{X^T\beta_0}} X\right)^T\right].
+\end{align*}
+
+\item
+Define
+\begin{equation*}
+\rho(x, y; \beta) = ye^{-\beta^T x} + (1-y)\beta^T x.
+\end{equation*}
+Take the parameter space $\Theta$ to be a convex set. Note that $\rho(x, y; \beta)$ is twice-differentiable in $\beta$. Define
+\begin{align*}
+h(x, y; \beta) = \frac{\partial}{\partial \beta} \rho(x, y; \beta) = -ye^{-\beta^T x} x + (1-y)x.
+\end{align*}
+Thus $h(x, y; \beta)$ is a subgradient of $\rho(x, y; \beta)$. Also define
+\begin{equation*}
+H(\beta; x, y) = \frac{\partial^2}{\partial \beta \partial \beta^T} \rho(x, y; \beta) = ye^{-\beta^t x} xx^T.
+\end{equation*}
+Note that for any $\beta \in \Theta$, since the matrix $xx^T$ is positive semidefinite, it follows that the Hessian $H(\beta; x, y)$ is positive semidefinite, and thus $\rho(x, y; \beta)$ is convex in $\beta$. Define
+\begin{equation*}
+K(\beta) = \E[\rho(X, Y; \beta)] = \E(Ye^{-\beta^T X} + (1-Y)\beta^T X).
+\end{equation*}
+Assume that $K(\beta) < \infty$ for every $\beta \in \Theta$, and that $K(\beta)$ has a unique minimizer $\beta_0$. Assume further that $\E[|h(X, Y; \beta)|^2] < \infty$ for every $\beta$ in a neighborhood of $\beta_0$. Assuming it is admissible to swap expectation with differentiation in this context, $K(\beta)$ is twice-differentiable, and so we have
+\begin{align*}
+H = \frac{\partial^2}{\partial \beta \partial \beta^T} K(\beta_0) &= \frac{\partial^2}{\partial \beta \partial \beta^T} \E[\rho(X, Y; \beta_0)] = \E\left[\frac{\partial^2}{\partial \beta \partial \beta^T} \rho(X, Y; \beta_0)\right] \\
+&= \E(Ye^{-\beta_0^t X} XX^T) = \E[H(X, Y; \beta_0)].
+\end{align*}
+As established, the Hessian $H(x, y; \beta)$ of $\rho(x, y; \beta)$ is positive semidefinite since the matrix $xx^T$ is positive semidefinite. Moreover, if $xx^T$ is non-singular, then it must be positive definite. In particular, $H$ is positive definite if $\E(XX^T)$ is non-singular.
+
+Thus, under the conditions outlined above, $\hat{\beta}_\mathrm{CAL}$ is consistent and asymptotically normal. To summarize (the definitions are as in the discussion above), the conditions are:
+\begin{enumerate}[label=(\arabic*)]
+\item
+The parameter space $\Theta$ is convex.
+
+\item
+$K(\beta) < \infty$ for every $\beta \in \Theta$.
+
+\item
+$K(\beta)$ has a unique minimizer $\beta_0$.
+
+\item
+$\E[|h(X, Y; \beta)|^2] < \infty$ for every $\beta$ in a neighborhood of $\beta_0$.
+
+\item
+$\E(XX^T)$ is non-singular.
+
+\end{enumerate}
+Therefore, under these conditions, $\hat{\beta}_\mathrm{CAL} \overset{p}\to \beta_0$, and
+\begin{equation*}
+\sqrt{n}(\hat{\beta}_\mathrm{CAL} - \beta_0) = -H^{-1} \frac{1}{\sqrt{n}} \sum_{i=1}^n h(X_i, Y_i; \beta_0) + o_p(1),
+\end{equation*}
+so that
+\begin{equation*}
+\sqrt{n}(\hat{\beta}_\mathrm{CAL} - \beta_0) \overset{\mathcal{D}}\to N(0, H^{-1}JH^{-1}),
+\end{equation*}
+where $J$ is given by
+\begin{align*}
+J &= \E[h(X, Y; \beta_0)h(X, Y; \beta_0)^T] \\
+&= \E[(-Ye^{-\beta^T X} X + (1-Y)X)(-Ye^{-\beta^T X} X + (1-Y)X)^T] \\
+&= \E[(-YX(1-e^{\beta^T X-1}) + X)(-YX(1-e^{\beta^T X-1}) + X)^T].
+\end{align*}
+
+\item
+The two estimators yield different expressions for their respective asymptotic variances. A precise comparison seems computationally arduous, however, and I will not undertake it due to time constraints.
+
+\end{enumerate}
+
+\end{enumerate}
+
+\end{document}

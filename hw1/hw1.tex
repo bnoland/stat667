@@ -1,0 +1,313 @@
+\documentclass[12pt]{article}
+\usepackage[top=1.25in, bottom=1.25in, left=1in, right=1in]{geometry}
+%\usepackage[top=0.9in, bottom=0.9in, left=0.5in, right=0.5in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{enumitem}
+\usepackage{chngcntr}
+
+%\usepackage{titlesec}
+
+% Perhaps not semantically ideal, but it works.
+%\titleformat*{\section}{\large\bfseries}
+
+\setenumerate{parsep=0em, listparindent=\parindent}
+
+% Reset equation numbering for each new item in an enumerate environment.
+\makeatletter
+\@addtoreset{equation}{enumi}
+\makeatother
+
+% Hacky macro to reset equation numbering within sections and subsections. See:
+% https://tex.stackexchange.com/questions/264335/when-using-section-counters-dont-reset-properly-how-to-fix-this
+\makeatletter
+\def\nullstepcounter#1{%
+	\begingroup
+		\let\@elt\@stpelt
+		\csname cl@#1\endcsname
+	\endgroup}
+\makeatother
+
+\counterwithin*{equation}{section}
+\counterwithin*{equation}{subsection}
+
+\DeclareMathOperator{\rank}{rank}
+
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Prob}{\mathrm{P}}
+
+\title{Homework 1}
+\author{Benjamin Noland}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{enumerate}
+\item
+\begin{enumerate}[label=(\roman*)]
+\item
+Let $x \in \mathbb{R}^d$. Then by Cauchy-Schwartz,
+\begin{equation*}
+\Vert x \Vert_1 = \sum_{i=1}^d |x_i| = \left| \sum_{i=1}^d |x_i| \cdot 1 \right| \leq \left(\sum_{i=1}^d |x_i| \sum_{i=1}^d 1 \right)^{1/2} = \sqrt{d} \Vert x \Vert_2.
+\end{equation*}
+I will take $c_2 = \sqrt{d}$. To see that the bound $\Vert x \Vert_1 \leq c_2 \Vert x \Vert_2$ is as tight as possible, it suffices to show that equality holds for a single $x \in \mathbb{R}^d$ with $x \neq 0$. If we take $x = (1, 1, \ldots 1) \in \mathbb{R}^d$ (i.e., a tuple where each component is a 1), then $\Vert x \Vert_1 = d$ and $\Vert x \Vert_2 = \sqrt{d}$, so that $\Vert x \Vert_1 = c_2 \Vert x \Vert_2$. This bound is therefore as tight as possible.
+
+Now for the lower bound. Let $x \in \mathbb{R}^d$, and assume that $x \neq 0$. Then
+\begin{equation*}
+\frac{|x_i|}{\Vert x \Vert_1} = \frac{|x_i|}{\sum_{j=1}^d |x_j|} \leq 1 \quad \text{for any $1 \leq i \leq d$}.
+\end{equation*}
+Hence,
+\begin{equation*}
+\left(\frac{|x_i|}{\Vert x \Vert_1}\right)^2 = \frac{x_i^2}{\Vert x \Vert_1^2} \leq \frac{|x_i|}{\Vert x \Vert_1} \quad \text{for any $1 \leq i \leq d$},
+\end{equation*}
+so that
+\begin{equation*}
+\frac{\Vert x \Vert_2}{\Vert x \Vert_1} = \sum_{i=1}^d \frac{x_i^2}{\Vert x \Vert_1^2} \leq \sum_{i=1}^d \frac{|x_i|}{\Vert x \Vert_1} = \frac{\Vert x \Vert_1}{\Vert x \Vert_1} = 1.
+\end{equation*}
+Thus $\Vert x \Vert_2 \leq \Vert x \Vert_1$. Moreover, this bound holds trivially when $x = 0$, and therefore holds for any $x \in \mathbb{R}^d$. I will take $c_1 = 1$. Note that if we take $x = (1, 0, \ldots, 0) \in \mathbb{R}^d$ (i.e., a tuple consisting of 1 followed by $(d-1)$ 0's), then $c_1 \Vert x \Vert_1 = \Vert x \Vert_2$. This bound is therefore as tight as possible.
+
+To summarize, we therefore have the inequality
+\begin{equation*}
+c_1 \Vert x \Vert_2 \leq \Vert x \Vert_1 \leq c_2 \Vert x \Vert_2 \quad \text{for every $x \in \mathbb{R}^d$},
+\end{equation*}
+where the constants $c_1$ and $c_2$, chosen above, make the bounds as tight as possible.
+
+\item
+We know from the argument in part (i) of this problem that $\Vert x \Vert_2 \leq \Vert x \Vert_1$ for any $x \in \mathbb{R}^d$, for any choice of $d \geq 1$. Thus we can take $c_1 = 1$, and this choice is independent of $d$.
+
+However, for the upper bound, no such constant $c_2$ exists. To see this, note first that, as established in part (i),
+\begin{equation} \label{eq:1}
+\Vert x \Vert_1 \leq \sqrt{d} \Vert x \Vert_2 \quad \text{for any $x \in \mathbb{R}^d$},
+\end{equation}
+and this bound is as tight as possible for any fixed value of $d \geq 1$. Now suppose a choice of $c_2$ exists that is independent of $d$. Then since the bound (\ref{eq:1}) is as tight as possible for any fixed $d \geq 1$, we must have
+\begin{equation} \label{eq:2}
+\sqrt{d} \Vert x \Vert_2 \leq c_2 \Vert x \Vert_2 \quad \text{for any $x \in \mathbb{R}^d$ and any $d \geq 1$}.
+\end{equation}
+In particular, this implies that we must have $\sqrt{d} \leq c_2$ for any $d \geq 1$ (take $x \neq 0$ in (\ref{eq:2}) and divide through by $\Vert x \Vert_2$). However, this does not hold if $d > c_2^2$. Therefore no choice of $c_2$ exists that is independent of $d$.
+
+\end{enumerate}
+
+\item
+First we need to establish that any norm $\Vert \cdot \Vert : \mathbb{R}^d \to \mathbb{R}$ is continuous. To see this, let $x \in \mathbb{R}^d$, and let $\{x_n\}$ be a sequence in $\mathbb{R}^d$ such that $x_n \to x$. Let $\epsilon > 0$. Then there exists $N \geq 1$ such that for every $n \geq N$,
+\begin{equation*}
+\Vert x_n - x \Vert < \epsilon.
+\end{equation*}
+Hence for every $n \geq N$,
+\begin{equation*}
+|\Vert x_n \Vert - \Vert x \Vert| \leq \Vert x_n - x \Vert < \epsilon
+\end{equation*}
+through an application of the triangle inequality. Therefore $\Vert x_n \Vert \to \Vert x \Vert$, so that the norm $\Vert \cdot \Vert$ is continuous.
+
+Now for the main result. Let $\epsilon > 0$. Note that we can choose a constant $M > 0$ satisfying $\Prob\{\Vert X \Vert > M\} < \epsilon / 2$ (this follows from basic properties of CDFs). Then since $X_n \overset{\mathcal{D}}\to X$, the Continuous Mapping Theorem implies that
+\begin{equation*}
+\Prob\{\Vert X_n \Vert > M\} \to \Prob\{\Vert X \Vert > M\} \quad \text{as $n \to \infty$},
+\end{equation*}
+since norms are everywhere continuous, as established above. Thus there exists $N \geq 1$ such that for every $n \geq N$,
+\begin{equation*}
+\Prob\{\Vert X_n \Vert > M\} - \Prob\{\Vert X \Vert > M\} \leq |\Prob\{\Vert X_n \Vert > M\} - \Prob\{\Vert X \Vert > M\}| < \frac{\epsilon}{2},
+\end{equation*}
+and so rearrangement yields,
+\begin{equation*}
+\Prob\{\Vert X_n \Vert > M\} \leq \Prob\{\Vert X \Vert > M\} + \frac{\epsilon}{2} < \frac{\epsilon}{2} + \frac{\epsilon}{2} = \epsilon.
+\end{equation*}
+since $M$ was chosen to satisfy $\Prob\{\Vert X \Vert > M\} < \epsilon / 2$. Therefore $\Prob\{\Vert X_n \Vert > M\} < \epsilon$ for every $n \geq N$, so that $X_n = O_p(1)$.
+
+\item
+Let $X_n = o_p(1)$ and $Y_n = O_p(1)$. First, we want to show that $X_n + Y_n = O_p(1)$. Let $\epsilon > 0$. Then since $Y_n = O_p(1)$, there exists $N \geq 1$ and a constant $M > 0$ such that
+\begin{equation*}
+\Prob\left\{\Vert Y_n \Vert > \frac{M}{2}\right\} < \frac{\epsilon}{2} \quad \text{for every $n \geq N$}.
+\end{equation*}
+In addition, since $X_n = o_p(1)$, there exists $N' \geq 1$ such that
+\begin{equation*}
+\Prob\left\{\Vert X_n \Vert > \frac{M}{2}\right\} < \frac{\epsilon}{2} \quad \text{for every $n \geq N'$}.
+\end{equation*}
+Thus for any $n \geq \max\{N, N'\}$,
+\begin{align*}
+\Prob\{\Vert X_n + Y_n \Vert > M\} &\leq \Prob\{\Vert X_n \Vert + \Vert Y_n \Vert > M\} \\
+&\leq \Prob\left\{\Vert X_n \Vert > \frac{M}{2}\right\} + \Prob\left\{\Vert Y_n \Vert > \frac{M}{2}\right\} \\
+&< \frac{\epsilon}{2} + \frac{\epsilon}{2} = \epsilon,
+\end{align*}
+through an application of the triangle inequality. Therefore $\Prob\{\Vert X_n + Y_n \Vert > M\} < \epsilon$ for every $n \geq \max\{N, N'\}$, so that $X_n + Y_n = O_p(1)$.
+
+Next, we want to show that $X_n Y_n = o_p(1)$. I will prove this under the assumption that $X_n$ and $Y_n$ are both scalar random variables (the result does not make sense for random vectors in general). Let $\epsilon > 0$. Then since $Y_n = O_p(1)$ there exists $N \geq 1$ and a constant $M > 0$ such that
+\begin{equation*}
+\Prob\{|Y_n| > M\} < \frac{\epsilon}{2} \quad \text{for every $n \geq N$}.
+\end{equation*}
+Let $\delta > 0$. Then since $X_n = o_p(1)$, there exists $N' \geq 1$ such that
+\begin{equation*}
+\Prob\left\{|X_n| > \frac{\delta}{M} \right\} < \frac{\epsilon}{2} \quad \text{for every $n \geq N'$}.
+\end{equation*}
+Therefore, for every $n \geq \max\{N, N'\}$,
+\begin{align*}
+\Prob\{|X_n Y_n| > \delta\} &\leq \Prob\left\{|X_n| > \frac{\delta}{M}\right\} + \Prob\{|Y_n| > M\} \\
+&< \frac{\epsilon}{2} + \frac{\epsilon}{2} = \epsilon.
+\end{align*}
+Hence $\Prob\{|X_n Y_n| > \delta\} \to 0$ as $n \to \infty$, so that $X_n Y_n = o_p(1)$.
+
+\item
+Let $\Theta = [0, 1)$, and define maps $g_n : \Theta \to \mathbb{R}$ (for every $n \geq 1$) and $g : \Theta \to \mathbb{R}$ by
+\begin{equation*}
+g_n(\theta) = \theta^n \quad \text{and} \quad g(\theta) = 0 \quad \text{for every $\theta \in \Theta$}.
+\end{equation*}
+Then $g$ and $g_n$ are continuous on $\Theta$ for every $n \geq 1$, and the sequence $\{g_n\}$ converges pointwise to $g$; that is
+\begin{equation*}
+\lim_{n \to \infty} g_n(\theta) = \lim_{n \to \infty} \theta^n = 0 = g(\theta) \quad \text{for every $\theta \in \Theta$}.
+\end{equation*}
+However,
+\begin{equation*}
+\lim_{n \to \infty} \sup_{\theta \in \Theta} |g_n(\theta) - g(\theta)| = \lim_{n \to \infty} \sup_{\theta \in \Theta} \theta^n = 1,
+\end{equation*}
+and therefore the sequence $\{g_n\}$ does not converge uniformly to $g$.
+
+\item
+Let $X_1, \ldots, X_n$ be IID random variables, and let $N = \{\theta : \Vert \theta - \theta_0 \Vert < \delta\}$, where $\delta > 0$, denote a neighborhood of $\theta_0$ where the given bound on the second partial derivatives holds. Let $\theta \in N$. Let $\Vert \cdot \Vert_\mathrm{max}$ denote the max norm on the space of $d \times d$ matrices. Then norm equivalence implies that there exists a constant $r > 0$ such that
+\begin{align} \label{eq:1}
+\begin{split}
+\left\Vert \frac{1}{n} \sum_{i=1}^n \frac{\partial^2}{\partial \theta \partial \theta^T} \psi(X_i; \theta) \right\Vert &\leq r\left\Vert \frac{1}{n} \sum_{i=1}^n \frac{\partial^2}{\partial \theta \partial \theta^T} \psi(X_i; \theta) \right\Vert_\mathrm{max} \\
+&\leq r\frac{1}{n} \sum_{i=1}^n \left\Vert \frac{\partial^2}{\partial \theta \partial \theta^T} \psi(X_i; \theta) \right\Vert_\mathrm{max} \\
+&= r\frac{1}{n} \sum_{i=1}^n \max_{j, k} \left\{\left| \frac{\partial^2}{\partial \theta_j \partial \theta_k} \psi(X_i; \theta) \right| \right\} \\
+&\leq r\frac{1}{n} \sum_{i=1}^n M(X_i).
+\end{split}
+\end{align}
+Next we want to show that $\tilde{\theta}_n \overset{p}\to \theta_0$. Let $\epsilon > 0$. Recall that by definition, $\tilde{\theta}_n$ lies on the line segment between $\hat{\theta}_n$ and $\theta_0$. Thus if $\Vert \tilde{\theta}_n - \theta_0 \Vert > \epsilon$, then $\Vert \hat{\theta}_n - \theta_0 \Vert > \epsilon$. Hence,
+\begin{equation*}
+\Prob \{\Vert \tilde{\theta}_n - \theta_0 \Vert > \epsilon \} \leq \Prob \{\Vert \hat{\theta}_n - \theta_0 \Vert > \epsilon\} \to 0 \quad \text{as $n \to \infty$},
+\end{equation*}
+and hence $\tilde{\theta}_n \overset{p}\to \theta_0$. Therefore,
+\begin{equation*}
+\Prob \{\tilde{\theta}_n \in N\} = \Prob \{\Vert \tilde{\theta}_n - \theta_0 \Vert < \delta\} \to 1 \quad \text{as $n \to \infty$}.
+\end{equation*}
+In other words, $\tilde{\theta}_n$ will lie in $N$ with high probability if $n$ is chosen large enough. In particular, this means that the bound on the second partial derivatives holds with high probability if $n$ is chosen large enough. Thus if we let
+\begin{equation*}
+\Psi = \left\Vert \frac{1}{n} \sum_{i=1}^n \frac{\partial^2}{\partial \theta \partial \theta^T} \psi(X_i; \tilde{\theta}_n) \right\Vert,
+\end{equation*}
+then, using (\ref{eq:1}),
+\begin{equation} \label{eq:2}
+\Prob \left\{\Vert \Psi \Vert \leq r\frac{1}{n} \sum_{i=1}^n M(X_i) \right\} \to 1 \quad \text{as $n \to \infty$}.
+\end{equation}
+Furthermore, note that since $\mu = \E[M(X_1)] < \infty$, the WLLN implies that
+\begin{equation} \label{eq:3}
+\frac{1}{n} \sum_{i=1}^n M(X_i) \overset{p}\to \mu.
+\end{equation}
+Let $\epsilon > 0$, and assume without loss of generality that $\epsilon < 1$, so that $\epsilon/2 < 1 - \epsilon/2$. Then by (\ref{eq:3}) there exists $N \geq 1$ such that for every $n \geq N$,
+\begin{equation*}
+\Prob\left\{\mu - \frac{1}{n} \sum_{i=1}^n M(X_i) > \frac{\mu}{2}\right\} \leq \Prob\left\{\left|\mu - \frac{1}{n} \sum_{i=1}^n M(X_i)\right| > \frac{\mu}{2}\right\} < 1 - \frac{\epsilon}{2}.
+\end{equation*}
+In addition, by (\ref{eq:2}) there exists $N' \geq 1$ such that
+\begin{equation*}
+\Prob \left\{\Vert \Psi \Vert > r\frac{1}{n} \sum_{i=1}^n M(X_i) \right\} < \frac{\epsilon}{2} \quad \text{for every $n \geq N'$}.
+\end{equation*}
+Thus, for every $n \geq \max\{N, N'\}$,
+\begin{align*}
+\Prob &\left\{\Vert \Psi \Vert > r\frac{\mu}{2}, \mu - \frac{1}{n} \sum_{i=1}^n M(X_i) > \frac{\mu}{2} \right\} \\
+&\qquad = \Prob \left\{\Vert \Psi \Vert + r\frac{\mu}{2} > r\mu, \mu - \frac{1}{n} \sum_{i=1}^n M(X_i) > \frac{\mu}{2} \right\} \\
+&\qquad = \Prob \left\{\Vert \Psi \Vert > r\frac{1}{n} \sum_{i=1}^n M(X_i), \mu - \frac{1}{n} \sum_{i=1}^n M(X_i) > \frac{\mu}{2} \right\} \\
+&\qquad \leq \Prob \left\{\Vert \Psi \Vert > r\frac{1}{n} \sum_{i=1}^n M(X_i) \right\} < \frac{\epsilon}{2},
+\end{align*}
+and so upon taking complements,
+\begin{align*}
+\Prob \left\{\Vert \Psi \Vert \leq r\frac{\mu}{2} \right\} + \Prob\left\{\mu - \frac{1}{n} \sum_{i=1}^n M(X_i) \leq \frac{\mu}{2} \right\} \geq 1 - \frac{\epsilon}{2}.
+\end{align*}
+Finally, rearrangement yields
+\begin{align*}
+\Prob \left\{\Vert \Psi \Vert \leq r\frac{\mu}{2} \right\} \geq 1 - \frac{\epsilon}{2} - \Prob\left\{\mu - \frac{1}{n} \sum_{i=1}^n M(X_i) \leq \frac{\mu}{2} \right\} \geq 1 - \frac{\epsilon}{2} - \frac{\epsilon}{2} = 1 - \epsilon.
+\end{align*}
+Therefore, upon taking complements again,
+\begin{equation*}
+\Prob \left\{\Vert \Psi \Vert > r\frac{\mu}{2} \right\} < \epsilon.
+\end{equation*}
+Therefore $\Psi = O_p(1)$.
+
+\item
+Note that since $H$ is constant, $H = O_p(1)$ and $H^{-1} = O_p(1)$. Therefore,
+\begin{align*}
+(H + o_p(1))(H^{-1} + o_p(1)) &= HH^{-1} + H o_p(1) + o_p(1) H^{-1} + o_p(1)p_p(1) \\
+&= I + O_p(1)o_p(1) + o_p(1)O_p(1) + o_p(1) \\
+&= I + o_p(1) + o_p(1) + o_p(1) \\
+&= I + o_p(1).
+\end{align*}
+Thus $(H + o_p(1))$ is non-singular with inverse $(H^{-1} + o_p(1))$ if and only if $I + o_p(1) = I$ identically. We have
+\begin{equation*}
+\Prob\{I + o_p(1) = I\} = \Prob\{o_p(1) = O\} = \Prob\{\Vert o_p(1) \Vert = 0\},
+\end{equation*}
+where $O$ denotes the square zero matrix of appropriate dimension. But since, for every $\epsilon > 0$,
+\begin{equation*}
+\Prob\{\Vert o_p(1) \Vert > \epsilon\} \to 0 \quad \text{as $n \to \infty$},
+\end{equation*}
+we see that the probability that $(H + o_p(1))$ is non-singular with inverse $(H^{-1} + o_p(1))$ tends to 1 as $n \to \infty$.
+
+\item
+If we define
+\begin{align*}
+\hat{G}_n &= \frac{1}{n} \sum_{i=1}^n \psi(X_i; \hat{\theta}_n)^2 \\
+\hat{H}_n &= \frac{1}{n} \sum_{i=1}^n \frac{\partial}{\partial \theta} \psi(X_i, \hat{\theta}_n),
+\end{align*}
+then $\hat{V}_n = \hat{H}_n^{-1} \hat{G}_n \hat{H}^{-T}$ seems like a reasonable candidate for a consistent estimator of $V$. (\textit{I ran out of time before being able to give this problem much attention}).
+
+\item
+\begin{enumerate}[label=(\roman*)]
+\item
+Let $x = (x_1, \ldots, x_n)$ be a realization of the sample $(X_1, \ldots, X_n)$. Define a sequence $\{\theta_k\}$ of estimates by $\theta_k = (1/2, 0, 1, x_1, 1/k)$ for every $k \geq 1$. Then, for every $k \geq 1$,
+\begin{align*}
+f(x_1, \theta_k) &= \frac{1/2}{\sqrt{2\pi}} \exp\left(-\frac{1}{2}x_1^2 \right) + \frac{1/2}{\sqrt{2\pi/k^2}} \exp\left(-\frac{1}{2/k^2}(x_1 - x_1)^2 \right) \\
+&= \frac{1/2}{\sqrt{2\pi}} \exp\left(-\frac{1}{2}x_1^2 \right) + \frac{1/2}{\sqrt{2\pi}}k \geq \frac{1/2}{\sqrt{2\pi}}k,
+\end{align*}
+and for any $i \geq 2$,
+\begin{align*}
+f(x_i, \theta_k) &= \frac{1/2}{\sqrt{2\pi}} \exp\left(-\frac{1}{2}x_i^2 \right) + \frac{1/2}{\sqrt{2\pi/k^2}} \exp\left(-\frac{1}{2/k^2}(x_i - x_1)^2 \right) \\
+&\geq \frac{1/2}{\sqrt{2\pi}} \exp\left(-\frac{1}{2}x_i^2 \right).
+\end{align*}
+The log-likelihood therefore satisfies
+\begin{equation*}
+\log L(\theta_k; x) = \sum_{i=1}^n \log f(x_i; \theta_k) \geq \log\left(\frac{1/2}{\sqrt{2\pi}}k\right) - \frac{1}{2} \sum_{i=1}^n x_i^2 + n\log\left(\frac{1/2}{\sqrt{2\pi}}\right).
+\end{equation*}
+Hence $\log L(\theta_k; x) \to \infty$ as $k \to \infty$, so that the log-likelihood is unbounded. In particular,
+\begin{equation*}
+\hat{\theta}_n = \lim_{k \to \infty} \theta_k = \left(\frac{1}{2}, 0, 1, x_1, 0\right)
+\end{equation*}
+defines a ``degenerate'' MLE, in the sense that $L(\hat{\theta}_n; x) = \infty$. Moreover, $\hat{\theta}_n$ lies on the boundary of the parameter space $\Theta$, but not in $\Theta$ itself. The corresponding estimator
+\begin{equation*}
+\hat{\theta}_n = \left(\frac{1}{2}, 0, 1, X_1, 0\right)
+\end{equation*}
+is inconsistent, since if $\theta_0 = (\alpha, \mu_1, \sigma_1, \mu_2, \sigma_2)$ denotes the true value of the parameter $\theta$, the condition $\hat{\theta}_n \overset{p}\to \theta_0$ implies that $0 \overset{p}\to \sigma_2$ by the Continuous Mapping Theorem, and hence that $\sigma_2 = 0$, which is impossible.
+
+\item
+Define
+\begin{equation*}
+\Theta_1 = \{(\alpha, \mu_1, \sigma_1, \mu_2, \sigma_2) : 0 \leq \alpha \leq 1, 0 \leq \mu_1, \mu_2 \leq 1, 1 \leq \sigma_1, \sigma_2 \leq 2\}.
+\end{equation*}
+Then $\Theta_1 \subset \Theta$. Thus if the true value, say $\theta_0$, of the parameter $\theta$ lies in $\Theta_1$, the following conditions ensure that the MLE of $\theta$ in $\Theta_1$ is consistent (see Theorem 2.5 in Newey and McFadden (1994)):
+\begin{enumerate}[label=(\arabic*)]
+\item
+$\Theta_1$ is compact (i.e., it is closed and bounded).
+
+\item
+The pdf $f(x; \theta)$ is identifiable.
+
+\item
+$\log f(x; \theta)$ is continuous as a function of $\theta$ on $\Theta_1$ for any fixed $x$.
+
+\item
+$\E(\sup_{\theta \in \Theta_1} |\log f(X; \theta)|) < \infty$.
+
+\end{enumerate}
+Assume that $\theta_0 \in \Theta_1$. Conditions (1)-(3) are easily seen to be satisfied. To see that condition (4) also holds, note that since $\Theta_1$ is compact, the fact that $\log f(x; \theta)$, and hence $|\log f(x; \theta)|$, is continuous as a function of $\theta$ on $\Theta_1$ for any fixed $x$ implies that $|\log f(x; \theta)|$ attains its global maximum at a point $\theta' \in \Theta_1$. Hence,
+\begin{equation*}
+\E\left(\sup_{\theta \in \Theta_1} |\log f(X; \theta)|\right) = \E\left(|\log f(X; \theta')|\right).
+\end{equation*}
+To show that $\E\left(|\log f(X; \theta')|\right) < \infty$, it suffices to show that $\E\left(\log f(X; \theta')\right) < \infty$. We have the following:
+\begin{align*}
+\E\left(\log f(X; \theta')\right) &= \int_{-\infty}^\infty \log f(x; \theta') f(x; \theta) \, dx \\
+&\leq \int_{-\infty}^\infty (f(x; \theta') - 1) f(x; \theta) \, dx < \infty,
+\end{align*}
+using the fact that $\log f(x; \theta') \leq f(x; \theta') - 1$ for any $x$, and that $(f(x; \theta') - 1)$ is bounded as a function of $x$. Thus condition (4) is satisfied, so that the MLE of $\theta$ in $\Theta_1$ is consistent.
+
+\end{enumerate}
+
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,222 @@
+\documentclass[12pt]{article}
+%\usepackage[top=1.25in, bottom=1.25in, left=1in, right=1in]{geometry}
+\usepackage[top=0.9in, bottom=0.9in, left=0.5in, right=0.5in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{enumitem}
+\usepackage{chngcntr}
+
+%\usepackage{titlesec}
+
+% Perhaps not semantically ideal, but it works.
+%\titleformat*{\section}{\large\bfseries}
+
+\setenumerate{parsep=0em, listparindent=\parindent}
+
+% Reset equation numbering for each new item in an enumerate environment.
+\makeatletter
+\@addtoreset{equation}{enumi}
+\makeatother
+
+% Hacky macro to reset equation numbering within sections and subsections. See:
+% https://tex.stackexchange.com/questions/264335/when-using-section-counters-dont-reset-properly-how-to-fix-this
+\makeatletter
+\def\nullstepcounter#1{%
+	\begingroup
+		\let\@elt\@stpelt
+		\csname cl@#1\endcsname
+	\endgroup}
+\makeatother
+
+\counterwithin*{equation}{section}
+\counterwithin*{equation}{subsection}
+
+\DeclareMathOperator{\rank}{rank}
+
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Prob}{\mathrm{P}}
+
+\title{Homework 4}
+\author{Benjamin Noland}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{enumerate}
+\item
+Let $\rho = \sigma \sqrt{2\log(p / \delta) / n}$, where $0 < \delta < 1/2$. Assume the compatibility condition holds for $S$ and constants $\nu_0 > 0$ and $\xi_0 > 1$, and suppose that the penalty constant $\lambda = A_0 \rho$, where $A_0 > (\xi_0 + 1) / (\xi_0 - 1)$. In addition, assume that $p \geq 1 / \delta$. Let $\Omega$ denote the event
+\begin{equation*}
+\Omega = \left\{\max_{1 \leq j \leq p} |\langle Y - X\beta^*, X_j \rangle| \leq \rho \right\}.
+\end{equation*}
+Then Lemma 3 of the lectures implies that under $\Omega$,
+\begin{equation*}
+\Vert X\hat{\beta} - X\beta^* \Vert_n^2 + (A_0 - 1)\rho \Vert \hat{\beta} - \beta^* \Vert_1 \leq 2A_0 \rho \sum_{j \in S} |\hat{\beta}_j - \beta^*_j|.
+\end{equation*}
+In particular,
+\begin{align*}
+2A_0 \lambda_0 \sum_{j \in S} |\hat{\beta}_j - \beta^*_j| &\geq (A_0 - 1)\rho \Vert \hat{\beta} - \beta^* \Vert_1 \\
+&= (A_0 - 1) \rho \sum_{j \not \in S} |\hat{\beta}_j - \beta^*_j| + (A_0 - 1) \rho \sum_{j \in S} |\hat{\beta}_j - \beta^*_j|,
+\end{align*}
+so that rearrangement yields
+\begin{equation*}
+(A_0 - 1) \rho \sum_{j \not \in S} |\hat{\beta}_j - \beta^*_j| \leq (A_0 +1) \rho \sum_{j \in S} |\hat{\beta}_j - \beta^*_j|,
+\end{equation*}
+and hence
+\begin{equation*}
+\sum_{j \not \in S} |\hat{\beta}_j - \beta^*_j| \leq \frac{A_0 +1}{A_0 - 1} \sum_{j \in S} |\hat{\beta}_j - \beta^*_j| < \xi_0 \sum_{j \in S} |\hat{\beta}_j - \beta^*_j|,
+\end{equation*}
+since the fact that $A_0 > (\xi_0 + 1) / (\xi_0 - 1)$ implies that $\xi_0 > (A_0 + 1) / (A_0 - 1)$. So the compatibility condition implies that
+\begin{equation*}
+\nu_0^2\left(\sum_{j \in S} |\hat{\beta}_j - \beta^*_j|\right)^2 \leq |S| \left((\hat{\beta} - \beta^*)^T\widetilde{\Sigma}(\hat{\beta} - \beta^*)\right) = |S| \Vert X\hat{\beta} - X\beta^* \Vert_n^2,
+\end{equation*}
+where the last equality follows from the fact that $\widetilde{\Sigma} = X^T X / n$. Therefore,
+\begin{align*}
+\Vert X\hat{\beta} - X\beta^* \Vert_n^2 + (A_0& - 1)\rho \Vert \hat{\beta} - \beta^* \Vert_1 \\
+&\leq 2A_0 \rho \sum_{j \in S} |\hat{\beta}_j - \beta^*_j| \\
+&= 2A_0 \rho \nu_0^{-1} |S|^{1/2} \Vert X\hat{\beta} - X\beta^* \Vert_n \\
+&= 2A_0 \rho \nu_0^{-1} |S|^{1/2} [\Vert X\hat{\beta} - X\beta^* \Vert_n^2 + (A_0 - 1) \Vert \hat{\beta} - \beta^* \Vert_1]^{1/2}.
+\end{align*}
+Squaring both sides and rearranging then yields,
+\begin{align*}
+\Vert X\hat{\beta} - X\beta^* \Vert_n^2 + (A_0 - 1)\rho \Vert \hat{\beta} - \beta^* \Vert_1 &\leq 4A_0^2\rho^2 \nu^{-2} |S| \\
+&= (4A_0^2\nu_0^{-2})(|S|\rho^2) \\
+&= O_p(1)|S|\rho^2.
+\end{align*}
+In particular,
+\begin{equation*}
+\Vert X\hat{\beta} - X\beta^* \Vert_n^2 \leq O_p(1)|S|\rho^2
+\end{equation*}
+Since $\Prob(\Omega) \geq 1 - 2\delta$ by Lemma 2 of the lectures, this inequality holds with probability $\geq 1 - 2\delta$. Moreover, since $p \geq 1 / \delta$ by assumption, we have
+\begin{align*}
+\Vert X\hat{\beta} - X\beta^* \Vert_n^2 &\leq O_p(1)|S|\rho^2 = O_p(1) |S| \sigma^2 \frac{2\log(p / \delta)}{n} = O_p(1) |S| \frac{\log(p / \delta)}{n} \\
+&= O_p(1) |S| \frac{\log(p) + \log(1 / \delta)}{n} \leq O_p(1) |S| \frac{2\log(p)}{n} \\
+&= O_p(1) |S| \frac{\log(p)}{n} = O_p(1) |S| \lambda_0^2,
+\end{align*}
+where the upper bound $\Vert X\hat{\beta} - X\beta^* \Vert_n^2 \leq O_p(1) |S| \lambda_0$ is independent of $\delta$, and thus holds with probability 1.
+
+\item
+Assume the same conditions as in problem 1. Note that we can write
+\begin{equation*}
+S = \{1 \leq j \leq p : |\beta^*_j| > \lambda_0\} = \{1 \leq j \leq p : |\beta^*_j / \lambda_0|^q > 1\}.
+\end{equation*}
+Thus,
+\begin{equation*}
+|S| \leq \sum_{j=1}^p \left|\frac{\beta^*_j}{\lambda_0}\right|^q = \left\Vert\frac{\beta^*}{\lambda_0}\right\Vert_q = \Vert \beta^* \Vert_q \lambda_0^{-q}.
+\end{equation*}
+Therefore, by problem 1,
+\begin{equation*}
+\Vert X\hat{\beta} - X\beta^* \Vert_n^2 \leq O_p(1)|S|\lambda_0^2 \leq O_p(1)\Vert \beta^* \Vert_q \lambda_0^{2-q}.
+\end{equation*}
+
+\item
+Let $\beta$ be arbitrary, and assume the same conditions as in problem 1, except this time let $S = \{1 \leq j \leq p : \beta_j \neq 0\}$. Let $\Omega$ denote the event
+\begin{equation*}
+\Omega = \left\{\max_{1 \leq j \leq p} |\langle Y - m^*(X), X_j \rangle| \leq \rho \right\}.
+\end{equation*}
+Since the error terms are centered and sub-Gaussian, the proof of Lemma 2 from the lectures shows that $P(\Omega) \geq 1 - 2\delta$. Let $\beta$ be an arbitrary element of the parameter space. The following extension of the basic inequality to non-linear models was proved in the lectures:
+\begin{equation*}
+\frac{1}{2}\Vert X\hat{\beta} - m^*(X) \Vert_n^2 + \lambda \Vert \hat{\beta} \Vert_1 \leq \frac{1}{2}\Vert X\beta - m^*(X) \Vert_n^2 + \langle Y - m^*(X), X\hat{\beta} - X\beta \rangle_n + \lambda \Vert \beta \Vert_1.
+\end{equation*}
+Using this inequality in the proof of Lemma 3 from the lectures shows that in the event $\Omega$,
+\begin{equation*}
+\frac{1}{2}\Vert X\hat{\beta} - m^*(X) \Vert_n^2 + (A_0 - 1)\rho \Vert \hat{\beta} - \beta \Vert_1 \leq \frac{1}{2}\Vert X\beta - m^*(X) \Vert_n^2 + 2A_0\rho \sum_{j \in S} |\hat{\beta}_j - \beta|.
+\end{equation*}
+In particular, it follows that
+\begin{equation*}
+(A_0 - 1)\rho \Vert \hat{\beta} - \beta \Vert_1 \leq 2A_0\rho \sum_{j \in S} |\hat{\beta}_j - \beta|,
+\end{equation*}
+and so it follows from the same manipulations carried out in problem 1 that
+\begin{equation*}
+\sum_{j \not \in S} |\hat{\beta}_j - \beta_j| \leq \frac{A_0 +1}{A_0 - 1} \sum_{j \in S} |\hat{\beta}_j - \beta_j| < \xi_0 \sum_{j \in S} |\hat{\beta}_j - \beta_j|,
+\end{equation*}
+and so by the compatibility condition,
+\begin{equation*}
+\nu_0^2\left(\sum_{j \in S} |\hat{\beta}_j - \beta_j|\right)^2 \leq |S| \left((\hat{\beta} - \beta)^T\widetilde{\Sigma}(\hat{\beta} - \beta)\right) = |S| \Vert X\hat{\beta} - X\beta\Vert_n^2.
+\end{equation*}
+Thus,
+\begin{align*}
+\frac{1}{2}\Vert X\hat{\beta} - m^*(X) \Vert_n^2 + (A_0 - 1)\rho \Vert \hat{\beta} - \beta \Vert_1 &\leq \frac{1}{2}\Vert X\beta - m^*(X) \Vert_n^2 + 2A_0 \rho \sum_{j \in S} |\hat{\beta}_j - \beta_j| \\
+&= \frac{1}{2}\Vert X\beta - m^*(X) \Vert_n^2 + 2A_0 \rho \nu_0^{-1} |S|^{1/2} \Vert X\hat{\beta} - X\beta \Vert_n,
+\end{align*}
+from which it follows that
+\begin{align*}
+\frac{1}{2}\Vert X\hat{\beta} - m^*(X) \Vert_n^2 &\leq \frac{1}{2}\Vert X\beta - m^*(X) \Vert_n^2 + 4A_0^2 \rho^2 \nu_0^{-2} |S| \\
+&= \frac{1}{2}\Vert X\beta - m^*(X) \Vert_n^2 + O_p(1) |S| \rho^2.
+\end{align*}
+Since $\Prob(\Omega) \geq 1 - 2\delta$, this inequality holds with probability $\geq 1 - 2\delta$. Since $p \geq 1 / \delta$ by assumption, the same sort of manipulations carried out in problem 1 show that
+\begin{equation*}
+\frac{1}{2}\Vert X\hat{\beta} - m^*(X) \Vert_n^2 \leq \frac{1}{2}\Vert X\beta - m^*(X) \Vert_n^2 + O_p(1) |S| \lambda_0^2
+\end{equation*}
+and hence, multiplying through by 2, we see that
+\begin{equation*}
+\Vert X\hat{\beta} - m^*(X) \Vert_n^2 \leq \Vert X\beta - m^*(X) \Vert_n^2 + O_p(1) |S| \lambda_0^2
+\end{equation*}
+with probability 1.
+
+\item
+\begin{enumerate}[label=(\roman*)]
+\item
+An application of the chain rule yields the following:
+\begin{align*}
+\nabla l(\beta) &= \frac{\partial}{\partial \beta} l(\beta) = \frac{\partial}{\partial \beta} \left[\frac{1}{n} \sum_{i=1}^n \psi(y_i, x_i^T\beta) \right] = \left[\frac{1}{n} \sum_{i=1}^n \frac{\partial}{\partial \beta} \psi(y_i, x_i^T\beta) \right] \\
+&= \frac{1}{n} \sum_{i=1}^n \psi_1(y_i, x_i^T\beta) \frac{\partial}{\partial \beta} (x_i^T\beta) = \frac{1}{n} \sum_{i=1}^n \psi_1(y_i, x_i^T\beta) x_i.
+\end{align*}
+
+\item
+Consider the tangent hyperplane of $l$ at $\beta$, defined by
+\begin{equation*}
+L(\alpha) = l(\beta) + (\alpha - \beta)^T \nabla l(\beta) \quad \text{for any $\alpha$}.
+\end{equation*}
+By the definition of the derivative, it follows that any directional derivative of $l$ at $\beta$ is equal to that of $L$. In particular,
+\begin{align*}
+\lim_{t \to 0} \frac{l(\beta) - l((1 - t)\beta + t\beta')}{t} &= \lim_{t \to 0} \frac{l(\beta) - l(\beta - t(\beta - \beta'))}{t} \\
+&= \lim_{t \to 0} \frac{L(\beta) - L(\beta - t(\beta - \beta'))}{t} \\
+&= \lim_{t \to 0} \frac{l(\beta) - l(\beta) - (\beta - t(\beta - \beta') - \beta)^T\nabla l(\beta)}{t} \\
+&= \lim_{t \to 0} \frac{t(\beta - \beta')^T\nabla l(\beta)}{t} \\
+&= (\beta - \beta')^T\nabla l(\beta) \\
+&= \langle \nabla l(\beta), \beta - \beta' \rangle.
+\end{align*}
+
+\end{enumerate}
+
+\item
+The average log-likelihood $l$ is given by
+\begin{equation*}
+l(\beta) = \frac{1}{n} \sum_{i=1}^n \left[\frac{y_i x_i^T \beta - \tau_0(x_i^T \beta)}{\sigma_i^2}\right] + C,
+\end{equation*}
+where the term $C$ does not depend upon $\beta$. The gradient of $l$ is
+\begin{equation*}
+\nabla l(\beta) = \frac{1}{n} \sum_{i=1}^n \left[\frac{y_i x_i^T - \tau_0'(x_i^T \beta)x_i}{\sigma_i^2}\right] = \frac{1}{n} \sum_{i=1}^n \left[\frac{y_i x_i^T - \E(y_i | x_i) x_i}{\sigma_i^2}\right].
+\end{equation*}
+The Bregman divergence of $l$ is therefore given by
+\begin{align*}
+D_l(\beta, \beta') &= l(\beta) - l(\beta') - \langle \nabla l(\beta'), \beta - \beta' \rangle \\
+&= \frac{1}{n} \sum_{i=1}^n \left[\frac{y_i x_i^T \beta - \tau_0(x_i^T \beta)}{\sigma_i^2} - \frac{y_i x_i^T \beta' - \tau_0(x_i^T \beta')}{\sigma_i^2}\right] - (\beta - \beta')^T \frac{1}{n} \sum_{i=1}^n \left[\frac{y_i x_i^T - \E(y_i | x_i) x_i}{\sigma_i^2}\right] \\
+&= \frac{1}{n} \sum_{i=1}^n \left[\frac{y_i x_i^T(\beta - \beta') - \tau_0(x_i^T \beta) + \tau_0(x_i^T \beta') - (\beta - \beta')y_i x_i + (\beta - \beta')^T \E(y_i | x_i) x_i}{\sigma_i^2}\right] \\
+&= \frac{1}{n} \sum_{i=1}^n \left[\frac{\E(y_i | x_i) x_i^T (\beta - \beta') - \tau_0(x_i^T \beta) + \tau_0(x_i^T \beta')}{\sigma_i^2}\right].
+\end{align*}
+Let $p$ and $p'$ be two distributions from the underlying exponential family. Then
+\begin{align*}
+p_i(y_i | x_i) &\propto \exp\left[\frac{y_i x_i^T \beta - \tau_0(x_i^T \beta)}{\sigma_i^2}\right] \\
+p'_i(y_i | x_i) &\propto \exp\left[\frac{y_i x_i^T \beta' - \tau_0(x_i^T \beta')}{\sigma_i^2}\right]
+\end{align*}
+for some $\beta$ and $\beta'$. The Kullback-Leibler divergence of $p_i$ and $p'_i$ is given by
+\begin{align*}
+\mathrm{KL}(p_i \parallel p'_i) &= \sum_j p_i(y_j | x_i) \log\left[\frac{p_i(y_j | x_i)}{p'_i(y_j | x_i)}\right] \\
+&= \sum_j p_i(y_j | x_i) \left[\frac{y_j x_i^T \beta - \tau_0(x_i^T \beta) - y_j x_i^T \beta' + \tau_0(x_i^T \beta')}{\sigma_i^2}\right] \\
+&= \sum_j p_i(y_j | x_i) \left[\frac{y_j x_i^T (\beta - \beta') - \tau_0(x_i^T \beta) + \tau_0(x_i^T \beta')}{\sigma_i^2}\right] \\
+&= \frac{1}{\sigma_i^2} \left[\sum_j p_i(y_j | x_i) y_j x_i^T (\beta - \beta') + \sum_j p_i(y_j | x_i) (-\tau_0(x_i^T \beta) + \tau_0(x_i^T \beta'))\right] \\
+&= \frac{E(y_i | x_i) x_i^T (\beta - \beta') - \tau_0(x_i^T \beta) + \tau_0(x_i^T \beta')}{\sigma_i^2}.
+\end{align*}
+So the Bregman divergence can be written
+\begin{equation*}
+D_l(\beta, \beta') = \frac{1}{n} \sum_{i=1}^n \left[\frac{\E(y_i | x_i) x_i^T (\beta - \beta') - \tau_0(x_i^T \beta) + \tau_0(x_i^T \beta')}{\sigma_i^2}\right] = \frac{1}{n} \sum_{i=1}^n \mathrm{KL}(p_i \parallel p'_i).
+\end{equation*}
+
+\end{enumerate}
+
+\end{document}

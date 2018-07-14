@@ -1,0 +1,221 @@
+\documentclass[12pt]{article}
+\usepackage[top=1.25in, bottom=1.25in, left=1in, right=1in]{geometry}
+%\usepackage[top=0.9in, bottom=0.9in, left=0.5in, right=0.5in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{enumitem}
+\usepackage{chngcntr}
+
+%\usepackage{titlesec}
+
+% Perhaps not semantically ideal, but it works.
+%\titleformat*{\section}{\large\bfseries}
+
+\setenumerate{parsep=0em, listparindent=\parindent}
+
+% Reset equation numbering for each new item in an enumerate environment.
+\makeatletter
+\@addtoreset{equation}{enumi}
+\makeatother
+
+% Hacky macro to reset equation numbering within sections and subsections. See:
+% https://tex.stackexchange.com/questions/264335/when-using-section-counters-dont-reset-properly-how-to-fix-this
+\makeatletter
+\def\nullstepcounter#1{%
+	\begingroup
+		\let\@elt\@stpelt
+		\csname cl@#1\endcsname
+	\endgroup}
+\makeatother
+
+\counterwithin*{equation}{section}
+\counterwithin*{equation}{subsection}
+
+\DeclareMathOperator{\rank}{rank}
+
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Prob}{\mathrm{P}}
+
+\title{Homework 3}
+\author{Benjamin Noland}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{enumerate}
+\item
+Since $a \leq X \leq b$, we have the inequality
+\begin{equation*}
+a + \frac{-b-a}{2} \leq X + \frac{-b-a}{2} \leq b + \frac{-b-a}{2},
+\end{equation*}
+which upon simplification becomes
+\begin{equation*}
+\frac{a-b}{2} \leq X + \frac{-b-a}{2} \leq \frac{b-a}{2}.
+\end{equation*}
+Thus,
+\begin{align*}
+\Var(X) &= \Var\left(X + \frac{-b-a}{2}\right) \\
+&= \E\left[\left(X + \frac{-b-a}{2}\right)^2\right] - \E\left[\left(X + \frac{-b-a}{2}\right)\right]^2 \\
+&\leq \E\left[\left(X + \frac{-b-a}{2}\right)^2\right] \leq \left(\frac{b-a}{2}\right)^2 = \frac{(b-a)^2}{4}.
+\end{align*}
+However, this inequality is not tight. To see this, let $X \sim \mathrm{unif}(0, 1)$. Then $0 \leq X \leq 1$, but
+\begin{equation*}
+\Var(X) = \frac{1}{12} < \frac{1}{4}.
+\end{equation*}
+
+\item
+\begin{enumerate}[label=(\roman*)]
+\item
+First, suppose $p \geq 1$ is even. Then the statement to prove reduces to
+\begin{equation} \label{eq:1}
+\Gamma(k) \leq 3k^k \quad \text{for every integer $k \geq 1$}.
+\end{equation}
+I will proceed by induction on $k$. Since $\Gamma(1) = 1 \leq 3$, we see that (\ref{eq:1}) holds when $k = 1$. Now suppose that (\ref{eq:1}) holds for some $k > 1$. Then
+\begin{equation*}
+\Gamma(k+1) = k\Gamma(k) \leq k \cdot 3k^k = 3k^{k+1} \leq 3(k+1)^{k+1}.
+\end{equation*}
+Thus (\ref{eq:1}) holds for every $k \geq 1$ by induction.
+
+Next, suppose that $p \geq 1$ is odd. Then the statement to prove reduces to
+\begin{equation} \label{eq:2}
+\Gamma(k+1/2) \leq 3(k+1/2)^{k+1/2} \quad \text{for every integer $k \geq 0$}.
+\end{equation}
+As before, I will proceed by induction on $k$. Since $\Gamma(1/2) = \sqrt{\pi} \leq 3(1/2)^{1/2}$, we see that (\ref{eq:2}) holds when $k = 0$. Now suppose that (\ref{eq:2}) holds for some $k > 0$. Then
+\begin{align*}
+\Gamma((k+1) + 1/2) &= (k+1/2)\Gamma(k+1/2) \\
+&\leq (k+1/2) \cdot 3(k+1/2)^{k+1/2} \\
+&= 3(k+1/2)^{(k+1) + 1/2} \\
+&\leq 3((k+1)+1/2)^{(k+1) + 1/2}.
+\end{align*}
+Thus (\ref{eq:2}) holds for every $k \geq 0$ by induction.
+
+Combining these two cases, we therefore see that
+\begin{equation*}
+\Gamma(p/2) \leq 3(p/2)^{p/2} \quad \text{for every integer $p \geq 1$}.
+\end{equation*}
+
+\item
+Define a map $f : [0, \infty) \to \mathbb{R}$ by $f(x) = (2\sqrt{2})^x - x$. Note that $f(1) = 2\sqrt{2} - 1 > 0$. Moreover, since $\ln(2\sqrt{2}) > 1$, $f'(x) = \ln(2\sqrt{2})(2\sqrt{2})^x - 1 > 0$ for every $x \geq 1$. Thus $f$ is strictly increasing on $[1, \infty)$. In particular, since $f(1) > 0$ as noted, $f(x) > 0$ for every $x \geq 1$. Equivalently, $(2\sqrt{2})^x > x$ for every $x \geq 1$. Thus, for every integer $p \geq 1$, $(2\sqrt{2})^p > p$, so that $p^{1/p} \leq 2\sqrt{2}$.
+
+\end{enumerate}
+
+\item
+(b) $\implies$ (c). Let $p \geq 1$. Then
+\begin{align*}
+\E(|X|^p) &= \int_0^\infty \Prob\{|X|^p > u\} \, du \\
+&= \int_0^\infty \Prob\{|X|^p > t^p\} pt^{p-1} \, dt \quad \text{(substitute $u = t^p$)} \\
+&= \int_0^\infty \Prob\{|X| > t\} pt^{p-1} \, dt \\
+&\leq \int_0^\infty 2e^{-t^2/K_1} pt^{p-1} \, dt \quad \text{(by (b))} \\
+&= \int_0^\infty e^{-s} p (K_1 s)^{p/2-1} K_1 \, ds \quad \text{(subsitute $s = t^2/K_1$}) \\
+&= pK_1^{p/2} \int_0^\infty e^{-s} s^{p/2-1} \, ds \\
+&= pK_1^{p/2} \Gamma(p/2) \\
+&\leq 3K_1^{p/2} p(p/2)^{p/2} \quad \text{(by problem 2(i))}.
+\end{align*}
+Thus,
+\begin{align*}
+[\E(|X|^p)]^{1/p} &\leq 3^{1/p} K_1^{1/2} p^{1/p} (p/2)^{1/2} \\
+&\leq 3K_1^{1/2} p^{1/p} (p/2)^{1/2} \quad \text{(since $3^{1/p} \leq 3$)} \\
+&\leq 6\sqrt{2} K_1^{1/2} (p/2)^{1/2} \quad \text{(by problem 2(ii))} \\
+&= 6K_1^{1/2} \sqrt{p}.
+\end{align*}
+Thus, letting $K_2 = 6K_1^{1/2} > 0$, we have
+\begin{equation*}
+[\E(|X|^p)]^{1/p} \leq K_2 \sqrt{p}.
+\end{equation*}
+
+(c) $\implies$ (d). Let $K_3 = 4eK_2^2 > 0$. We have the following:
+\begin{align*}
+\E(e^{X^2/K_3}) &= \E\left[\sum_{p=0}^\infty \frac{(X^2/K_3)^p}{p!}\right] = 1 + \E\left[\sum_{p=1}^\infty \frac{(X^2/K_3)^p}{p!}\right] \\
+&= 1 + \E\left[\sum_{p=1}^\infty \frac{X^{2p}/K_3^p}{p!}\right] = 1 + \sum_{p=1}^\infty \frac{\E[X^{2p}]/K_3^p}{p!}.
+\end{align*}
+By (c), $\E(X^{2p}) \leq K_2^{2p} (2p)^p$ for every $p \geq 1$. In addition, by Stirling's approximation,
+\begin{equation*}
+p! \geq \sqrt{2\pi} p^{p+1/2} e^{-p} \geq p^p e^{-p} = \left(\frac{p}{e}\right)^p
+\end{equation*}
+for every $p \geq 1$. Thus,
+\begin{align*}
+\E(e^{X^2/K_3}) &= 1 + \sum_{p=1}^\infty \frac{\E[X^{2p}]/K_3^p}{p!} \leq 1 + \sum_{p=1}^\infty \frac{K_2^{2p} (2p)^p/K_3^p}{(p/e)^p} \\
+&= 1 + \sum_{p=1}^\infty \frac{K_2^{2p} (2p)^p/(4eK_2^2)^p}{(p/e)^p} = 1 + \sum_{p=1}^\infty \frac{(2p)^p/(4e)^p}{(p/e)^p} \\
+&= 1 + \sum_{p=1}^\infty \left(\frac{1}{2}\right)^p = \sum_{p=0}^\infty \left(\frac{1}{2}\right)^p = 2.
+\end{align*}
+
+(d) $\implies$ (b). Let $t > 0$. Then since $\E(e^{X^2/K_3}) \leq 2$ by (d), an application of Markov's Inequality yields
+\begin{equation*}
+\Prob\{|X| > t\} = \Prob\{e^{X^2/K_3} > e^{t^2/K_3}\} \leq e^{-t^2/K_3} \E(e^{X^2/K_3}) \leq 2e^{-t^2/K_3}.
+\end{equation*}
+Thus, taking $K_1 = K_3$, we have
+\begin{equation*}
+\Prob\{|X| > t\} \leq 2e^{-t^2/K_1}.
+\end{equation*}
+
+(c) $\implies$ (a). Let $p \geq 1$. Then since
+\begin{equation*}
+[\E(|X|^p)]^{1/p} \leq K_2 \sqrt{p}
+\end{equation*}
+by (c), an application of Minkowski's Inequality yields
+\begin{align*}
+[\E(|X-\mu|^p)]^{1/p} &\leq [\E(|X|^p)]^{1/p} + [\E(|-\mu|^p)]^{1/p} = [\E(|X|^p)]^{1/p} + |\mu| \\
+&\leq K_2 \sqrt{p} + |\mu| \leq K_2 \sqrt{p} + |\mu| \sqrt{p} \\
+&= (K_2 + |\mu|) \sqrt{p} = K_2' \sqrt{p},
+\end{align*}
+where $K_2' = K_2 + |\mu| > 0$. Thus, since $\E(X-\mu) = 0$, the result proven in the lectures implies that
+\begin{equation*}
+\E(e^{\lambda (X-\mu)}) \leq e^{\lambda^2/K_0} \quad \text{for any $\lambda \in \mathbb{R}$}
+\end{equation*}
+for some $K_0 > 0$.
+
+(a) $\implies$ (c). Let $p \geq 1$. Since $\E(X-\mu) = 0$, the result proven in the lectures implies that
+\begin{equation*}
+[\E(|X-\mu|^p)]^{1/p} \leq K_2' \sqrt{p}
+\end{equation*}
+for some $K_2' > 0$. Thus by Minkowski's Inequality,
+\begin{align*}
+[\E(|X|^p)]^{1/p} &= [\E(|(X - \mu) + \mu|^p)]^{1/p} \leq [\E(|X - \mu|^p)]^{1/p} + [\E(|\mu|^p)]^{1/p} \\
+&= [\E(|X - \mu|^p)]^{1/p} + |\mu| \leq K_2' \sqrt{p} + |\mu| \\
+&\leq K_2' \sqrt{p} + |\mu| \sqrt{p} = (K_2' + \mu) \sqrt{p} = K_2 \sqrt{p},
+\end{align*}
+where $K_2 = K_2' + |\mu| > 0$.
+
+\item
+Let $S \subseteq \{1, 2, \ldots, \beta\}$, and let $\nu_0 > 0$ and $\xi > 1$. Assume the restricted eigenvalue condition holds; that is, for any $b \in \mathbb{R}^p$ satisfying
+\begin{equation} \label{eq:1}
+\sum_{j \not \in S} |b_j| \leq \xi \sum_{j \in S} |b_j|,
+\end{equation}
+we have
+\begin{equation} \label{eq:2}
+\nu_0^2 \left(\sum_{j \in S} b_j^2\right) \leq b^T \widetilde{\Sigma} b.
+\end{equation}
+So let $b \in \mathbb{R}^p$ satisfy (\ref{eq:1}). Then $b$ satisfies (\ref{eq:2}). Then by Cauchy-Schwarz,
+\begin{equation*}
+\left(\sum_{j \in S} |b_j|\right)^2 \leq \left(\sum_{j \in S} b_j^2\right) |S|.
+\end{equation*}
+Thus, by (\ref{eq:2}),
+\begin{equation*}
+\nu_0^2 \left(\sum_{j \in S} |b_j|\right)^2 \leq \nu_0^2 \left(\sum_{j \in S} b_j^2\right) |S| \leq (b^T \widetilde{\Sigma} b) |S|.
+\end{equation*}
+We therefore see that the compatibility condition holds. Hence the restricted eigenvalue condition implies the compatibility condition.
+
+\item
+By definition, $\hat{\beta}$ minimizes the Lasso objective function. Thus, for any $0 \leq t \leq 1$,
+\begin{equation} \label{eq:1}
+\frac{1}{2} \Vert Y - X\hat{\beta} \Vert_n^2 + \lambda \Vert \beta \Vert_1 \leq \frac{1}{2} \Vert Y - X[(1-t)\hat{\beta} + t\beta^*] \Vert_n^2 + \lambda \Vert (1-t)\hat{\beta} + t\beta^* \Vert_1.
+\end{equation}
+Note that we have
+\begin{align*}
+\frac{1}{2} \Vert& Y - X[(1-t)\hat{\beta} + t\beta^*] \Vert_n^2 \\
+&= \frac{1}{2} \Vert Y - X\hat{\beta} - tX(\hat{\beta} - \beta^*) \Vert_n^2 \\
+&= \frac{1}{2} \Vert Y - X\hat{\beta} \Vert_n^2 + \frac{1}{2}t^2 \Vert X(\hat{\beta} - \beta^*) \Vert_n^2 - t \langle Y - X\hat{\beta}, X(\hat{\beta} - \beta^*) \rangle_n.
+\end{align*}
+Thus we can write (\ref{eq:1}) as
+\begin{equation*}
+\lambda \Vert \hat{\beta} \Vert_1 \leq \frac{1}{2}t^2 \Vert X(\hat{\beta} - \beta^*) \Vert_n^2 - t \langle Y - X\hat{\beta}, X(\hat{\beta} - \beta^* \rangle_n + \lambda \Vert (1-t)\hat{\beta} + t\beta^*) \Vert_1.
+\end{equation*}
+[This is as far as I got -- all attempts hereafter were fruitless. Is there a trick, or is this just a lot of elaborate algebra?]
+
+\end{enumerate}
+
+\end{document}

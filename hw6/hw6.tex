@@ -1,0 +1,140 @@
+\documentclass[12pt]{article}
+%\usepackage[top=1.25in, bottom=1.25in, left=1in, right=1in]{geometry}
+\usepackage[top=0.9in, bottom=0.9in, left=0.5in, right=0.5in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{enumitem}
+\usepackage{chngcntr}
+
+%\usepackage{titlesec}
+
+% Perhaps not semantically ideal, but it works.
+%\titleformat*{\section}{\large\bfseries}
+
+\setenumerate{parsep=0em, listparindent=\parindent}
+
+% Reset equation numbering for each new item in an enumerate environment.
+\makeatletter
+\@addtoreset{equation}{enumi}
+\makeatother
+
+% Hacky macro to reset equation numbering within sections and subsections. See:
+% https://tex.stackexchange.com/questions/264335/when-using-section-counters-dont-reset-properly-how-to-fix-this
+\makeatletter
+\def\nullstepcounter#1{%
+	\begingroup
+		\let\@elt\@stpelt
+		\csname cl@#1\endcsname
+	\endgroup}
+\makeatother
+
+\counterwithin*{equation}{section}
+\counterwithin*{equation}{subsection}
+
+\DeclareMathOperator{\rank}{rank}
+
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Prob}{\mathrm{P}}
+
+\title{Homework 6}
+\author{Benjamin Noland}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+Yes, yes\ldots I know. It's the bitter end of the semester.
+
+\begin{enumerate}
+\item
+Assumptions:
+\begin{enumerate}[label=(\arabic*)]
+\item
+$(X_1 - X_2\gamma^*_1)^T(1 / \hat{\tau}_1 - 1 / \tau^*_1)(Y - X\beta^*)/n = o_p(n^{-1/2})$
+\item
+$\Vert \hat{\kappa}_1 \Vert_\infty \leq O_p(1)\sqrt{\log(p)/n}$
+\item
+$\Vert \hat{\beta} - \beta^* \Vert_1 \leq O_p(1) S_{\beta^*} \sqrt{\log(p)/n}$
+\item
+$S_{\beta^*} \log(p)/\sqrt{n} = o(1)$
+\item
+$\Vert X_2^T(Y - X\beta^*)/n \Vert_\infty \leq O_p(1)\sqrt{\log(p)/n}$
+\item
+$\Vert \hat{\gamma}_1 - \gamma^*_1 \Vert_1 \leq O_p(1) S_{\gamma^*_1} \sqrt{\log(p)/n}$
+\item
+$S_{\gamma^*_1} \log(p) / \sqrt{n} = o(1)$
+\item
+$1 / \hat{\tau}_1 = O_p(1)$.
+\item
+The model $X_1 = X_2\gamma_1 + \delta$ is correctly specified, with true parameter $\gamma^*_1$, and the lasso estimator $\hat{\gamma_1}$ for $\gamma_1$ is consistent. Thus $\hat{\gamma}_1 \overset{p}\to \gamma^*_1$.
+\end{enumerate}
+From an argument given in the lectures, paired with assumption (1), we have:
+\begin{align*}
+\hat{\hat{\beta}}_1 - \beta^*_1 &= -\hat{\kappa}_1^T (\hat{\beta}_1 - \beta^*_2) / \hat{\tau}_1 + (X_1 - X_2\gamma^*_1)^T (Y - X\beta^*) / (n\hat{\tau}_1) - (\hat{\gamma}_1 - \gamma^*_1) X_2^T (Y - X\beta^*) / (n\hat{\tau}_1) \\
+&= -\hat{\kappa}_1^T (\hat{\beta}_1 - \beta^*_2) / \hat{\tau}_1 + (X_1 - X_2\gamma^*_1)^T (Y - X\beta^*) / (n\tau^*_1) \\
+&\qquad+ (X_1 - X_2\gamma^*_1)^T(1 / \hat{\tau}_1 - 1 / \tau^*_1)(Y - X\beta^*)/n \\
+&\qquad- (\hat{\gamma}_1 - \gamma^*_1) X_2^T (Y - X\beta^*) / (n\hat{\tau}_1) \\
+&= -\hat{\kappa}_1^T (\hat{\beta}_1 - \beta^*_2) / \hat{\tau}_1 + (X_1 - X_2\gamma^*_1)^T (Y - X\beta^*) / (n\tau^*_1) \\
+&\qquad- (\hat{\gamma}_1 - \gamma^*_1) X_2^T (Y - X\beta^*) / (n\hat{\tau}_1) + o_p(n^{-1/2}).
+\end{align*}
+Assumptions (2)-(4) paired with H\"older's inequality yield
+\begin{align*}
+|\hat{\kappa}_1^T(\hat{\beta}_2 - \beta^*_2)| \leq \Vert \hat{\kappa}_1 \Vert_\infty \Vert \hat{\beta} - \beta^* \Vert_1 \leq O_p(1) \frac{\log(p)}{n} S_{\beta^*} = O_p(1) \frac{\log(p)}{\sqrt{n}} S_{\beta^*_1} \frac{1}{\sqrt{n}} = o_p(n^{-1/2}),
+\end{align*}
+so that
+\begin{equation*}
+\hat{\kappa}_1^T(\hat{\beta}_2 - \beta^*_2) = o_p(n^{-1/2}).
+\end{equation*}
+In addition, assumptions (5)-(6) paired with H\"older's inequality yield
+\begin{align*}
+|(\hat{\gamma}_1 - \gamma^*_1)X_2^T(Y - X\beta^*)/n| &\leq \Vert \hat{\gamma}_1 - \gamma^*_1 \Vert_1 \Vert X_2^T(Y - X\beta^*)/2 \Vert_\infty \\
+&\leq O_p(1) \frac{\log(p)}{n} S_{\gamma^*_1} = O_p(1) \frac{\log(p)}{\sqrt{n}} S_{\gamma^*_1} \frac{1}{\sqrt{n}} = o_p(n^{-1/2}),
+\end{align*}
+so that
+\begin{equation*}
+(\hat{\gamma}_1 - \gamma^*_1)X_2^T(Y - X\beta^*)/n = o_p(n^{-1/2}).
+\end{equation*}
+Since $1 / \hat{\tau}_1 = O_p(1)$ by assumption (8), we therefore have
+\begin{align*}
+\hat{\hat{\beta}}_1 - \beta^*_1 &= -\hat{\kappa}_1^T (\hat{\beta}_1 - \beta^*_2) / \hat{\tau}_1 + (X_1 - X_2\gamma^*_1)^T (Y - X\beta^*) / (n\tau^*_1) \\
+&\qquad- (\hat{\gamma}_1 - \gamma^*_1) X_2^T (Y - X\beta^*) / (n\hat{\tau}_1) + o_p(n^{-1/2}) \\
+&= o_p(n^{-1/2})O_p(1) + (X_1 - X_2\gamma^*_1)^T (Y - X\beta^*) / (n\tau^*_1) + o_p(n^{-1/2})O_p(1) + o_p(n^{1/2}) \\
+&= (X_1 - X_2\gamma^*_1)^T (Y - X\beta^*) + o_p(n^{-1/2}).
+\end{align*}
+Thus we can write
+\begin{align*}
+\hat{\hat{\beta}}_1 - \beta^*_1 &= (X_1 - X_2\gamma^*_1)^T (Y - X\beta^*) + o_p(n^{-1/2}) \\
+&= \frac{1}{n} \sum_{i=1}^n (X_{i1} - X_{i2}^T\gamma^*_1)(Y_i - X_i^T\beta^*) / \tau^*_1 + o_p(n^{-1/2}) \\
+&= \frac{1}{n} \sum_{i=1}^n \psi(Y_i, X_i; \beta^*, \gamma^*_1) + o_p(n^{-1/2}),
+\end{align*}
+where $\psi(Y_i, X_i; \beta^*, \gamma^*_1) = (X_{i1} - X_{i2}^T\gamma^*_1)(Y_i - X_i^T\beta^*) / \tau^*_1$.
+
+\item
+Assumptions:
+\begin{enumerate}[label=(\arabic*)]
+\item
+The model $Y = X\beta + \epsilon$ is correctly specified, with true parameter $\beta^*$, and the lasso estimator $\hat{\beta}$ for $\beta$ is consistent. Thus $\hat{\beta} \overset{p}\to \beta^*$.
+\item
+The model $X_1 = X_2\gamma_1 + \delta$ is correctly specified, with true parameter $\gamma^*_1$, and the lasso estimator $\hat{\gamma_1}$ for $\gamma_1$ is consistent. Thus $\hat{\gamma}_1 \overset{p}\to \gamma^*_1$.
+\end{enumerate}
+We have
+\begin{align*}
+V &= \Var[\psi(Y_0, X_0; \beta^*, \gamma^*_1)] = \Var[(X_{01} - X_{02}^T\gamma^*_1)(Y_0 - X_0^T\beta^*)/\tau^*_1] \\
+&= \E\{[(X_{01} - X_{02}^T\gamma^*_1)(Y_0 - X_0^T\beta^*)/\tau^*_1]^2\}.
+\end{align*}
+Thus, since $\hat{\beta} \overset{p}\to \beta^*$ and $\hat{\gamma}_1 \overset{p}\to \gamma^*_1$,
+\begin{align*}
+\hat{V} = \frac{1}{n} \sum_{i=1}^n [\psi(Y_i, X_i; \hat{\beta}, \hat{\gamma}_1)]^2 &= \frac{1}{n} \sum_{i=1}^n [(X_{i1} - X_{i2}^T\hat{\gamma}_1)(Y_i - X_i^T\hat{\beta}) / \hat{\tau}_1]^2 \\
+&\overset{p}\to \E\{[(X_{01} - X_{02}^T\gamma^*_1)(Y_0 - X_0^T\beta^*)/\tau^*_1]^2\} = V.
+\end{align*}
+Thus $\hat{V} = V + o_p(1)$.
+
+\item
+Theorem 2.2 in van der Geer et al. provides conditions for asymptotic normality of the desparsified lasso estimator under random design, and provides an explicit expression for the asymptotic variance. Problems 1 and 2 together do the same, though with stronger assumptions (there is almost certainly quite a lot of redundancy) than those given in van der Geer et al.
+
+\end{enumerate}
+
+\end{document}
